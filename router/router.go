@@ -2,6 +2,9 @@ package router
 
 import (
 	"dungeons_helper_server/internal/account"
+	"dungeons_helper_server/internal/races"
+	"dungeons_helper_server/internal/stats"
+	"dungeons_helper_server/internal/subraces"
 	"fmt"
 	"net/http"
 )
@@ -26,14 +29,42 @@ func (r *responseWriterWithStatus) WriteHeader(statusCode int) {
 	r.ResponseWriter.WriteHeader(statusCode)
 }
 
-func InitRouter(accountHandler *account.Handler) *mux.Router {
+type Option func(router *mux.Router)
+
+func AccountRoutes(accountHandler *account.Handler) Option {
+	return func(r *mux.Router) {
+		r.HandleFunc("/auth/registration", accountHandler.CreateAccount).Methods("POST")
+		r.HandleFunc("/auth/email", accountHandler.Login).Methods("POST")
+		r.HandleFunc("/logout", accountHandler.Logout).Methods("POST")
+		r.HandleFunc("/auth/restore", accountHandler.RestorePassword).Methods("POST")
+		r.HandleFunc("/account/nick", accountHandler.UpdateNickname).Methods("PATCH")
+	}
+}
+
+func RacesRouter(racesHandler *races.Handler) Option {
+	return func(r *mux.Router) {
+		r.HandleFunc("/getRaces", racesHandler.GetAllRaces).Methods("GET")
+	}
+}
+
+func SubracesRouter(subracesHandler *subraces.Handler) Option {
+	return func(r *mux.Router) {
+		r.HandleFunc("/getSubraces", subracesHandler.GetAllSubraces).Methods("GET")
+	}
+}
+
+func StatsRouter(statsHandler *stats.Handler) Option {
+	return func(r *mux.Router) {
+		r.HandleFunc("/getStatsById", statsHandler.GetStatsById).Methods("GET")
+	}
+}
+
+func InitRouter(options ...Option) *mux.Router {
 	r := mux.NewRouter()
 	r.Use(LoggingMiddleware)
-	r.HandleFunc("/auth/registration", accountHandler.CreateAccount).Methods("POST")
-	r.HandleFunc("/auth/email", accountHandler.Login).Methods("POST")
-	r.HandleFunc("/logout", accountHandler.Logout).Methods("POST")
-	r.HandleFunc("/auth/restore", accountHandler.RestorePassword).Methods("POST")
-	r.HandleFunc("/account/nick", accountHandler.UpdateNickname).Methods("PATCH")
+	for _, option := range options {
+		option(r)
+	}
 	return r
 }
 

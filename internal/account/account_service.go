@@ -66,8 +66,6 @@ func (s *service) Login(c context.Context, req *LoginAccountReq) (*LoginAccountR
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
-	time.Sleep(5 * time.Second)
-
 	account, err := s.Repository.GetAccountByEmail(ctx, req.Email)
 	if err != nil {
 		return &LoginAccountRes{}, err
@@ -87,12 +85,11 @@ func (s *service) Login(c context.Context, req *LoginAccountReq) (*LoginAccountR
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
 		},
 	})
-
 	ss, err := token.SignedString([]byte(secretKey))
 	if err != nil {
 		return &LoginAccountRes{}, err
 	}
-	return &LoginAccountRes{accessToken: ss, Id: account.Id, Nickname: account.Nickname, IdAvatar: account.IdAvatar}, nil
+	return &LoginAccountRes{accessToken: ss, Id: account.Id, EMail: account.Email, Nickname: account.Nickname, IdAvatar: account.IdAvatar}, nil
 }
 
 func (s *service) RestorePassword(c context.Context, email string) (string, error) {

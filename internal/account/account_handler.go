@@ -165,7 +165,7 @@ func (h *Handler) RestorePassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UpdateNickname(w http.ResponseWriter, r *http.Request) {
-	var req updateReq
+	var req UpdateReq
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

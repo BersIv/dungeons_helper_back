@@ -20,6 +20,7 @@ func NewRepository(db DBTX) Repository {
 	return &repository{db: db}
 }
 
+// CreateAccount TODO: delete Account from response
 func (r *repository) CreateAccount(ctx context.Context, account *Account) (*Account, error) {
 	query := "INSERT INTO account(email, password, nickname, idAvatar) VALUES (?, ?, ?, ?)"
 	result, err := r.db.ExecContext(ctx, query, account.Email, account.Password, account.Nickname, account.IdAvatar)
