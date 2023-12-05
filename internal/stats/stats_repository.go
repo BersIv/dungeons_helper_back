@@ -2,21 +2,14 @@ package stats
 
 import (
 	"context"
-	"database/sql"
+	"dungeons_helper_server/db"
 )
 
-type DBTX interface {
-	ExecContext(ctx context.Context, query string, args ...interface{}) (sql.Result, error)
-	PrepareContext(context.Context, string) (*sql.Stmt, error)
-	QueryContext(context.Context, string, ...interface{}) (*sql.Rows, error)
-	QueryRowContext(context.Context, string, ...interface{}) *sql.Row
-}
-
 type repository struct {
-	db DBTX
+	db db.DatabaseTX
 }
 
-func NewRepository(db DBTX) Repository {
+func NewRepository(db db.DatabaseTX) Repository {
 	return &repository{db: db}
 }
 

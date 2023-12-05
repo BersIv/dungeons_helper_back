@@ -1,4 +1,4 @@
-package subraces
+package skills
 
 import (
 	"context"
@@ -14,10 +14,10 @@ func NewRepository(db db.DatabaseTX) Repository {
 	return &repository{db: db}
 }
 
-func (r *repository) GetAllSubraces(ctx context.Context) ([]Subraces, error) {
-	var subraces []Subraces
+func (r *repository) GetAllSkills(ctx context.Context) ([]Skills, error) {
+	var skills []Skills
 
-	query := "SELECT id, subraceName, idStats FROM subrace"
+	query := "SELECT id, skillName FROM skills"
 	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
@@ -29,16 +29,16 @@ func (r *repository) GetAllSubraces(ctx context.Context) ([]Subraces, error) {
 		}
 	}(rows)
 	for rows.Next() {
-		var subrace Subraces
-		err := rows.Scan(&subrace.Id, &subrace.SubraceName, &subrace.IdStats)
+		var skill Skills
+		err := rows.Scan(&skill.Id, &skill.SkillName)
 		if err != nil {
 			return nil, err
 		}
-		subraces = append(subraces, subrace)
+		skills = append(skills, skill)
 	}
 	err = rows.Err()
 	if err != nil {
 		return nil, err
 	}
-	return subraces, nil
+	return skills, nil
 }

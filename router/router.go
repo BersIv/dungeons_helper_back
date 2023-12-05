@@ -2,7 +2,10 @@ package router
 
 import (
 	"dungeons_helper_server/internal/account"
+	"dungeons_helper_server/internal/alignment"
+	"dungeons_helper_server/internal/class"
 	"dungeons_helper_server/internal/races"
+	"dungeons_helper_server/internal/skills"
 	"dungeons_helper_server/internal/stats"
 	"dungeons_helper_server/internal/subraces"
 	"fmt"
@@ -56,6 +59,24 @@ func SubracesRouter(subracesHandler *subraces.Handler) Option {
 func StatsRouter(statsHandler *stats.Handler) Option {
 	return func(r *mux.Router) {
 		r.HandleFunc("/getStatsById", statsHandler.GetStatsById).Methods("GET")
+	}
+}
+
+func AlignmentRouter(alignmentHandler *alignment.Handler) Option {
+	return func(r *mux.Router) {
+		r.HandleFunc("/getAllAlignments", alignmentHandler.GetAllAlignments).Methods("GET")
+	}
+}
+
+func ClassRouter(classHandler *class.Handler) Option {
+	return func(r *mux.Router) {
+		r.HandleFunc("/getAllClasses", classHandler.GetAllClasses).Methods("GET")
+	}
+}
+
+func SkillsRouter(skillHandler *skills.Handler) Option {
+	return func(r *mux.Router) {
+		r.HandleFunc("/getAllSkills", skillHandler.GetAllSkills).Methods("GET")
 	}
 }
 

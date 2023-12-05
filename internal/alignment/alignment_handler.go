@@ -1,4 +1,4 @@
-package subraces
+package alignment
 
 import (
 	"encoding/json"
@@ -15,9 +15,9 @@ func NewHandler(s Service) *Handler {
 	}
 }
 
-func (h *Handler) GetAllSubraces(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetAllAlignments(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	res, err := h.Service.GetAllSubraces(ctx)
+	res, err := h.Service.GetAllAlignments(ctx)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

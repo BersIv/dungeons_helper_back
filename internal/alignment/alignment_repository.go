@@ -1,4 +1,4 @@
-package subraces
+package alignment
 
 import (
 	"context"
@@ -14,10 +14,10 @@ func NewRepository(db db.DatabaseTX) Repository {
 	return &repository{db: db}
 }
 
-func (r *repository) GetAllSubraces(ctx context.Context) ([]Subraces, error) {
-	var subraces []Subraces
+func (r *repository) GetAllAlignments(ctx context.Context) ([]Alignment, error) {
+	var alignments []Alignment
 
-	query := "SELECT id, subraceName, idStats FROM subrace"
+	query := "SELECT id, alignmentName FROM alignment"
 	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
@@ -29,16 +29,17 @@ func (r *repository) GetAllSubraces(ctx context.Context) ([]Subraces, error) {
 		}
 	}(rows)
 	for rows.Next() {
-		var subrace Subraces
-		err := rows.Scan(&subrace.Id, &subrace.SubraceName, &subrace.IdStats)
+		var alignment Alignment
+		err := rows.Scan(&alignment.Id, &alignment.AlignmentName)
 		if err != nil {
 			return nil, err
 		}
-		subraces = append(subraces, subrace)
+		alignments = append(alignments, alignment)
 	}
 	err = rows.Err()
 	if err != nil {
 		return nil, err
 	}
-	return subraces, nil
+
+	return alignments, nil
 }

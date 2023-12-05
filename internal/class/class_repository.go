@@ -1,4 +1,4 @@
-package subraces
+package class
 
 import (
 	"context"
@@ -14,10 +14,10 @@ func NewRepository(db db.DatabaseTX) Repository {
 	return &repository{db: db}
 }
 
-func (r *repository) GetAllSubraces(ctx context.Context) ([]Subraces, error) {
-	var subraces []Subraces
+func (r *repository) GetAllClasses(ctx context.Context) ([]Class, error) {
+	var classes []Class
 
-	query := "SELECT id, subraceName, idStats FROM subrace"
+	query := "SELECT id, className FROM class"
 	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
@@ -29,16 +29,16 @@ func (r *repository) GetAllSubraces(ctx context.Context) ([]Subraces, error) {
 		}
 	}(rows)
 	for rows.Next() {
-		var subrace Subraces
-		err := rows.Scan(&subrace.Id, &subrace.SubraceName, &subrace.IdStats)
+		var class Class
+		err := rows.Scan(&class.Id, &class.ClassName)
 		if err != nil {
 			return nil, err
 		}
-		subraces = append(subraces, subrace)
+		classes = append(classes, class)
 	}
 	err = rows.Err()
 	if err != nil {
 		return nil, err
 	}
-	return subraces, nil
+	return classes, nil
 }
