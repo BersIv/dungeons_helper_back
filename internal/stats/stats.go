@@ -27,10 +27,8 @@ type GetStatsRes struct {
 
 type Repository interface {
 	GetStatsById(ctx context.Context, id int64) (*Stats, error)
-	CreateStats(ctx context.Context, stats *Stats) (*Stats, error)
 }
 
 type Service interface {
-	GetStatsById(ctx context.Context, id int64) (*GetStatsRes, error)
-	CreateStats(ctx context.Context, stats *Stats) (*Stats, error)
+	GetStatsById(c context.Context, id int64) (*GetStatsRes, error)
 }

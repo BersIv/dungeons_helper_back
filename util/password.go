@@ -22,7 +22,7 @@ func CheckPassword(password string, hashedPassword string) error {
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 func GeneratePassword() string {
-	var passwordLength int = 10
+	var passwordLength = 10
 	password := make([]byte, passwordLength)
 	for i := range password {
 		password[i] = charset[rand.Intn(len(charset))]

@@ -37,9 +37,10 @@ func (h *Handler) CreateAccount(w http.ResponseWriter, r *http.Request) {
 	}(r.Body)
 
 	ctx := r.Context()
-	res, err := h.Service.CreateAccount(ctx, &account)
+	err = h.Service.CreateAccount(ctx, &account)
 	if err != nil {
-		mysqlErr, ok := err.(*mysql.MySQLError)
+		var mysqlErr *mysql.MySQLError
+		ok := errors.As(err, &mysqlErr)
 		if ok && mysqlErr.Number == 1062 {
 			http.Error(w, err.Error(), http.StatusConflict)
 		} else if errors.Is(err, context.DeadlineExceeded) {
@@ -49,15 +50,9 @@ func (h *Handler) CreateAccount(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	jsonResponse, err := json.Marshal(res)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	_, _ = w.Write(jsonResponse)
 }
 
 func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {

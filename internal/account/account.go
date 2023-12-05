@@ -17,13 +17,6 @@ type CreateAccountReq struct {
 	IdAvatar int64  `json:"IdAvatar"`
 }
 
-type CreateAccountRes struct {
-	Id       int64  `json:"id"`
-	Email    string `json:"Email"`
-	Nickname string `json:"nickname"`
-	IdAvatar int64  `json:"IdAvatar"`
-}
-
 type LoginAccountReq struct {
 	Email    string `json:"Email"`
 	Password string `json:"password"`
@@ -43,7 +36,7 @@ type UpdateReq struct {
 }
 
 type Repository interface {
-	CreateAccount(ctx context.Context, account *Account) (*Account, error)
+	CreateAccount(ctx context.Context, account *Account) error
 	GetAccountByEmail(ctx context.Context, email string) (*Account, error)
 	GetAccountById(ctx context.Context, id int64) (*Account, error)
 	UpdatePassword(ctx context.Context, account *Account) error
@@ -51,7 +44,7 @@ type Repository interface {
 }
 
 type Service interface {
-	CreateAccount(c context.Context, req *CreateAccountReq) (*CreateAccountRes, error)
+	CreateAccount(c context.Context, req *CreateAccountReq) error
 	Login(c context.Context, req *LoginAccountReq) (*LoginAccountRes, error)
 	RestorePassword(c context.Context, email string) (string, error)
 	UpdateNickname(c context.Context, id int64, newNickname string) error

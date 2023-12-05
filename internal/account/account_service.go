@@ -24,13 +24,13 @@ func NewService(repository Repository) Service {
 	}
 }
 
-func (s *service) CreateAccount(c context.Context, req *CreateAccountReq) (*CreateAccountRes, error) {
+func (s *service) CreateAccount(c context.Context, req *CreateAccountReq) error {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
 	hashedPassword, err := util.HashPassword(req.Password)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	account := &Account{
@@ -40,19 +40,12 @@ func (s *service) CreateAccount(c context.Context, req *CreateAccountReq) (*Crea
 		IdAvatar: req.IdAvatar,
 	}
 
-	r, err := s.Repository.CreateAccount(ctx, account)
+	err = s.Repository.CreateAccount(ctx, account)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	res := &CreateAccountRes{
-		Id:       r.Id,
-		Email:    r.Email,
-		Nickname: r.Nickname,
-		IdAvatar: r.IdAvatar,
-	}
-
-	return res, nil
+	return nil
 }
 
 type MyJWTClaims struct {
