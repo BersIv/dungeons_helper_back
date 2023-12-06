@@ -2,7 +2,7 @@ package lobby
 
 import (
 	"context"
-	"dungeons_helper/server/internal/character"
+	"dungeons_helper/internal/character"
 )
 
 type Lobby struct {

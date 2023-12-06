@@ -3,7 +3,7 @@ package skills
 import (
 	"context"
 	"database/sql"
-	"dungeons_helper/server/db"
+	"dungeons_helper/db"
 )
 
 type repository struct {

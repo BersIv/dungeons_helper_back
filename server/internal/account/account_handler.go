@@ -2,7 +2,7 @@ package account
 
 import (
 	"context"
-	"dungeons_helper/server/util"
+	"dungeons_helper/util"
 	"encoding/json"
 	"errors"
 	"fmt"

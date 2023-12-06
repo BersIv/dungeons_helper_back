@@ -2,8 +2,8 @@ package lobby
 
 import (
 	"context"
-	"dungeons_helper/server/db"
-	"dungeons_helper/server/internal/character"
+	"dungeons_helper/db"
+	"dungeons_helper/internal/character"
 )
 
 type repository struct {

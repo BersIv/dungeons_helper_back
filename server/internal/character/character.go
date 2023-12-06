@@ -2,13 +2,13 @@ package character
 
 import (
 	"context"
-	"dungeons_helper/server/internal/alignment"
-	"dungeons_helper/server/internal/class"
-	"dungeons_helper/server/internal/images"
-	"dungeons_helper/server/internal/races"
-	"dungeons_helper/server/internal/skills"
-	"dungeons_helper/server/internal/stats"
-	"dungeons_helper/server/internal/subraces"
+	"dungeons_helper/internal/alignment"
+	"dungeons_helper/internal/class"
+	"dungeons_helper/internal/images"
+	"dungeons_helper/internal/races"
+	"dungeons_helper/internal/skills"
+	"dungeons_helper/internal/stats"
+	"dungeons_helper/internal/subraces"
 )
 
 type Character struct {

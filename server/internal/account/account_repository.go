@@ -2,7 +2,7 @@ package account
 
 import (
 	"context"
-	"dungeons_helper/server/db"
+	"dungeons_helper/db"
 )
 
 type repository struct {

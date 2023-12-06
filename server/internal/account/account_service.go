@@ -2,7 +2,7 @@ package account
 
 import (
 	"context"
-	util2 "dungeons_helper/server/util"
+	util2 "dungeons_helper/util"
 	"github.com/golang-jwt/jwt/v5"
 	"os"
 	"strconv"

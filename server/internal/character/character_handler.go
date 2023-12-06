@@ -1,7 +1,7 @@
 package character
 
 import (
-	"dungeons_helper/server/util"
+	"dungeons_helper/util"
 	"encoding/base64"
 	"encoding/json"
 	"io"
