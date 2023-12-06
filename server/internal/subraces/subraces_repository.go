@@ -1,9 +1,9 @@
-package class
+package subraces
 
 import (
 	"context"
 	"database/sql"
-	"dungeons_helper_server/db"
+	"dungeons_helper/server/db"
 )
 
 type repository struct {
@@ -14,10 +14,10 @@ func NewRepository(db db.DatabaseTX) Repository {
 	return &repository{db: db}
 }
 
-func (r *repository) GetAllClasses(ctx context.Context) ([]Class, error) {
-	var classes []Class
+func (r *repository) GetAllSubraces(ctx context.Context) ([]Subraces, error) {
+	var subraces []Subraces
 
-	query := "SELECT id, className FROM class"
+	query := "SELECT id, subraceName, idStats FROM subrace"
 	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
@@ -29,16 +29,16 @@ func (r *repository) GetAllClasses(ctx context.Context) ([]Class, error) {
 		}
 	}(rows)
 	for rows.Next() {
-		var class Class
-		err := rows.Scan(&class.Id, &class.ClassName)
+		var subrace Subraces
+		err := rows.Scan(&subrace.Id, &subrace.SubraceName, &subrace.IdStats)
 		if err != nil {
 			return nil, err
 		}
-		classes = append(classes, class)
+		subraces = append(subraces, subrace)
 	}
 	err = rows.Err()
 	if err != nil {
 		return nil, err
 	}
-	return classes, nil
+	return subraces, nil
 }

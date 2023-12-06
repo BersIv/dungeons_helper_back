@@ -1,7 +1,7 @@
 package lobby
 
 import (
-	"dungeons_helper_server/util"
+	"dungeons_helper/server/util"
 	"encoding/json"
 	"io"
 	"net/http"

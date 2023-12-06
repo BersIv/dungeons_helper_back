@@ -1,4 +1,4 @@
-module dungeons_helper_server
+module dungeons_helper
 
 go 1.21
 

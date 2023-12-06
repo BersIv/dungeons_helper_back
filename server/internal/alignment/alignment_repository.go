@@ -3,7 +3,7 @@ package alignment
 import (
 	"context"
 	"database/sql"
-	"dungeons_helper_server/db"
+	"dungeons_helper/server/db"
 )
 
 type repository struct {

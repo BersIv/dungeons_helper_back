@@ -2,7 +2,7 @@ package stats
 
 import (
 	"context"
-	"dungeons_helper_server/db"
+	"dungeons_helper/server/db"
 )
 
 type repository struct {

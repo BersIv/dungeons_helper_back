@@ -1,9 +1,9 @@
-package races
+package skills
 
 import (
 	"context"
 	"database/sql"
-	"dungeons_helper_server/db"
+	"dungeons_helper/server/db"
 )
 
 type repository struct {
@@ -14,10 +14,10 @@ func NewRepository(db db.DatabaseTX) Repository {
 	return &repository{db: db}
 }
 
-func (r *repository) GetAllRaces(ctx context.Context) ([]Races, error) {
-	var races []Races
+func (r *repository) GetAllSkills(ctx context.Context) ([]Skills, error) {
+	var skills []Skills
 
-	query := "SELECT id, raceName FROM races"
+	query := "SELECT id, skillName FROM skills"
 	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
@@ -28,17 +28,18 @@ func (r *repository) GetAllRaces(ctx context.Context) ([]Races, error) {
 
 		}
 	}(rows)
+
 	for rows.Next() {
-		var race Races
-		err := rows.Scan(&race.Id, &race.RaceName)
+		var skill Skills
+		err := rows.Scan(&skill.Id, &skill.SkillName)
 		if err != nil {
 			return nil, err
 		}
-		races = append(races, race)
+		skills = append(skills, skill)
 	}
 	err = rows.Err()
 	if err != nil {
 		return nil, err
 	}
-	return races, nil
+	return skills, nil
 }

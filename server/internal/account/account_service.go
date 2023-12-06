@@ -2,7 +2,7 @@ package account
 
 import (
 	"context"
-	"dungeons_helper_server/util"
+	util2 "dungeons_helper/server/util"
 	"github.com/golang-jwt/jwt/v5"
 	"os"
 	"strconv"
@@ -25,7 +25,7 @@ func (s *service) CreateAccount(c context.Context, req *CreateAccountReq) error 
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
-	hashedPassword, err := util.HashPassword(req.Password)
+	hashedPassword, err := util2.HashPassword(req.Password)
 	if err != nil {
 		return err
 	}
@@ -54,12 +54,12 @@ func (s *service) Login(c context.Context, req *LoginAccountReq) (*LoginAccountR
 		return nil, err
 	}
 
-	err = util.CheckPassword(req.Password, account.Password)
+	err = util2.CheckPassword(req.Password, account.Password)
 	if err != nil {
 		return nil, err
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, util.MyJWTClaims{
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, util2.MyJWTClaims{
 		Id:       account.Id,
 		Nickname: account.Nickname,
 		IdAvatar: account.IdAvatar,
@@ -85,8 +85,8 @@ func (s *service) RestorePassword(c context.Context, email string) (string, erro
 		return "", err
 	}
 
-	tempPassword := util.GeneratePassword()
-	hashedPassword, err := util.HashPassword(tempPassword)
+	tempPassword := util2.GeneratePassword()
+	hashedPassword, err := util2.HashPassword(tempPassword)
 	if err != nil {
 		return "", err
 	}
@@ -127,12 +127,12 @@ func (s *service) UpdatePassword(c context.Context, req *UpdatePasswordReq) erro
 		return err
 	}
 
-	err = util.CheckPassword(req.OldPassword, account.Password)
+	err = util2.CheckPassword(req.OldPassword, account.Password)
 	if err != nil {
 		return err
 	}
 
-	hashedPassword, err := util.HashPassword(req.NewPassword)
+	hashedPassword, err := util2.HashPassword(req.NewPassword)
 	if err != nil {
 		return err
 	}
