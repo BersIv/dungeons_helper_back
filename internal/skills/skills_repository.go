@@ -28,6 +28,7 @@ func (r *repository) GetAllSkills(ctx context.Context) ([]Skills, error) {
 
 		}
 	}(rows)
+
 	for rows.Next() {
 		var skill Skills
 		err := rows.Scan(&skill.Id, &skill.SkillName)

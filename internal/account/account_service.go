@@ -4,12 +4,9 @@ import (
 	"context"
 	"dungeons_helper_server/util"
 	"github.com/golang-jwt/jwt/v5"
+	"os"
 	"strconv"
 	"time"
-)
-
-const (
-	secretKey = "secret"
 )
 
 type service struct {
@@ -48,28 +45,21 @@ func (s *service) CreateAccount(c context.Context, req *CreateAccountReq) error 
 	return nil
 }
 
-type MyJWTClaims struct {
-	Id       int64  `json:"id"`
-	Nickname string `json:"nickname"`
-	IdAvatar int64  `json:"idAvatar"`
-	jwt.RegisteredClaims
-}
-
 func (s *service) Login(c context.Context, req *LoginAccountReq) (*LoginAccountRes, error) {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
 	account, err := s.Repository.GetAccountByEmail(ctx, req.Email)
 	if err != nil {
-		return &LoginAccountRes{}, err
+		return nil, err
 	}
 
 	err = util.CheckPassword(req.Password, account.Password)
 	if err != nil {
-		return &LoginAccountRes{}, err
+		return nil, err
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, MyJWTClaims{
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, util.MyJWTClaims{
 		Id:       account.Id,
 		Nickname: account.Nickname,
 		IdAvatar: account.IdAvatar,
@@ -78,11 +68,12 @@ func (s *service) Login(c context.Context, req *LoginAccountReq) (*LoginAccountR
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
 		},
 	})
+	secretKey := os.Getenv("SECRET_KEY")
 	ss, err := token.SignedString([]byte(secretKey))
 	if err != nil {
-		return &LoginAccountRes{}, err
+		return nil, err
 	}
-	return &LoginAccountRes{accessToken: ss, Id: account.Id, EMail: account.Email, Nickname: account.Nickname, IdAvatar: account.IdAvatar}, nil
+	return &LoginAccountRes{accessToken: ss, Id: account.Id, Email: account.Email, Nickname: account.Nickname, IdAvatar: account.IdAvatar}, nil
 }
 
 func (s *service) RestorePassword(c context.Context, email string) (string, error) {
@@ -101,26 +92,53 @@ func (s *service) RestorePassword(c context.Context, email string) (string, erro
 	}
 
 	account.Password = hashedPassword
-	if err := s.Repository.UpdatePassword(c, account); err != nil {
+	if err := s.Repository.UpdatePassword(ctx, account); err != nil {
 		return "", err
 	}
 
-	//TODO: Send email with new password
-
+	//TODO: Send email with new password and delete tempPassword from return
 	return tempPassword, nil
 }
 
-func (s *service) UpdateNickname(c context.Context, id int64, newNickname string) error {
+func (s *service) UpdateNickname(c context.Context, req *UpdateNicknameReq) error {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
-	account, err := s.Repository.GetAccountById(ctx, id)
+	account, err := s.Repository.GetAccountById(ctx, req.Id)
 	if err != nil {
 		return err
 	}
 
-	account.Nickname = newNickname
+	account.Nickname = req.Nickname
 	err = s.Repository.UpdateNickname(ctx, account)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *service) UpdatePassword(c context.Context, req *UpdatePasswordReq) error {
+	ctx, cancel := context.WithTimeout(c, s.timeout)
+	defer cancel()
+
+	account, err := s.Repository.GetAccountById(ctx, req.Id)
+	if err != nil {
+		return err
+	}
+
+	err = util.CheckPassword(req.OldPassword, account.Password)
+	if err != nil {
+		return err
+	}
+
+	hashedPassword, err := util.HashPassword(req.NewPassword)
+	if err != nil {
+		return err
+	}
+
+	account.Password = hashedPassword
+	err = s.Repository.UpdatePassword(ctx, account)
 	if err != nil {
 		return err
 	}

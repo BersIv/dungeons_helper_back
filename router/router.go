@@ -3,15 +3,16 @@ package router
 import (
 	"dungeons_helper_server/internal/account"
 	"dungeons_helper_server/internal/alignment"
+	"dungeons_helper_server/internal/character"
 	"dungeons_helper_server/internal/class"
 	"dungeons_helper_server/internal/races"
 	"dungeons_helper_server/internal/skills"
 	"dungeons_helper_server/internal/stats"
 	"dungeons_helper_server/internal/subraces"
 	"fmt"
+	"github.com/gorilla/mux"
 	"net/http"
 )
-import "github.com/gorilla/mux"
 
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -41,6 +42,7 @@ func AccountRoutes(accountHandler *account.Handler) Option {
 		r.HandleFunc("/logout", accountHandler.Logout).Methods("POST")
 		r.HandleFunc("/auth/restore", accountHandler.RestorePassword).Methods("POST")
 		r.HandleFunc("/account/nick", accountHandler.UpdateNickname).Methods("PATCH")
+		r.HandleFunc("/account/password", accountHandler.UpdatePassword).Methods("PATCH")
 	}
 }
 
@@ -77,6 +79,14 @@ func ClassRouter(classHandler *class.Handler) Option {
 func SkillsRouter(skillHandler *skills.Handler) Option {
 	return func(r *mux.Router) {
 		r.HandleFunc("/getAllSkills", skillHandler.GetAllSkills).Methods("GET")
+	}
+}
+
+func CharacterRouter(characterHandler *character.Handler) Option {
+	return func(r *mux.Router) {
+		r.HandleFunc("/getAllCharactersByAccId", characterHandler.GetAllCharactersByAccId).Methods("GET")
+		r.HandleFunc("/getCharacterById", characterHandler.GetCharacterById).Methods("GET")
+		r.HandleFunc("/createCharacter", characterHandler.CreateCharacter).Methods("POST")
 	}
 }
 

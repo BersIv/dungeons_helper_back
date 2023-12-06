@@ -10,6 +10,10 @@ type Account struct {
 	IdAvatar int64  `json:"IdAvatar"`
 }
 
+type IdAccountReq struct {
+	IdAcc int64 `json:"idAcc"`
+}
+
 type CreateAccountReq struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -25,14 +29,20 @@ type LoginAccountReq struct {
 type LoginAccountRes struct {
 	accessToken string
 	Id          int64  `json:"id"`
-	EMail       string `json:"email"`
+	Email       string `json:"email"`
 	Nickname    string `json:"nickname"`
 	IdAvatar    int64  `json:"IdAvatar"`
 }
 
-type UpdateReq struct {
+type UpdateNicknameReq struct {
 	Id       int64  `json:"id"`
 	Nickname string `json:"nickname"`
+}
+
+type UpdatePasswordReq struct {
+	Id          int64  `json:"id"`
+	OldPassword string `json:"oldPassword"`
+	NewPassword string `json:"newPassword"`
 }
 
 type Repository interface {
@@ -47,5 +57,6 @@ type Service interface {
 	CreateAccount(c context.Context, req *CreateAccountReq) error
 	Login(c context.Context, req *LoginAccountReq) (*LoginAccountRes, error)
 	RestorePassword(c context.Context, email string) (string, error)
-	UpdateNickname(c context.Context, id int64, newNickname string) error
+	UpdateNickname(c context.Context, req *UpdateNicknameReq) error
+	UpdatePassword(c context.Context, req *UpdatePasswordReq) error
 }

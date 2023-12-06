@@ -29,7 +29,7 @@ func (r *repository) GetAccountByEmail(ctx context.Context, email string) (*Acco
 	query := "SELECT id, email, password, nickname, idAvatar FROM account WHERE email = ?"
 	err := r.db.QueryRowContext(ctx, query, email).Scan(&account.Id, &account.Email, &account.Password, &account.Nickname, &account.IdAvatar)
 	if err != nil {
-		return &Account{}, err
+		return nil, err
 	}
 	return &account, nil
 }
@@ -40,8 +40,9 @@ func (r *repository) GetAccountById(ctx context.Context, id int64) (*Account, er
 	query := "SELECT id, email, password, nickname, idAvatar FROM account WHERE id = ?"
 	err := r.db.QueryRowContext(ctx, query, id).Scan(&account.Id, &account.Email, &account.Password, &account.Nickname, &account.IdAvatar)
 	if err != nil {
-		return &Account{}, err
+		return nil, err
 	}
+
 	return &account, nil
 }
 

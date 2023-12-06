@@ -2,6 +2,7 @@ package account
 
 import (
 	"context"
+	"dungeons_helper_server/util"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,6 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"io"
 	"net/http"
+	"time"
 )
 
 type Handler struct {
@@ -59,6 +61,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	var account LoginAccountReq
 	err := json.NewDecoder(r.Body).Decode(&account)
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	defer func(Body io.ReadCloser) {
@@ -85,7 +88,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	cookie := http.Cookie{
 		Name:     "jwt",
 		Value:    res.accessToken,
-		MaxAge:   60 * 60 * 24,
+		Expires:  time.Now().Add(time.Hour),
 		Path:     "/",
 		Domain:   "localhost",
 		Secure:   false,
@@ -160,7 +163,7 @@ func (h *Handler) RestorePassword(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UpdateNickname(w http.ResponseWriter, r *http.Request) {
-	var req UpdateReq
+	var req UpdateNicknameReq
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -174,11 +177,18 @@ func (h *Handler) UpdateNickname(w http.ResponseWriter, r *http.Request) {
 		}
 	}(r.Body)
 
+	id, err := util.GetIdFromHeader(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	req = UpdateNicknameReq{Id: id, Nickname: req.Nickname}
 	ctx := r.Context()
-	err := h.Service.UpdateNickname(ctx, req.Id, req.Nickname)
+	err = h.Service.UpdateNickname(ctx, &req)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) {
-			http.Error(w, "Wrong password or email", http.StatusRequestTimeout)
+			http.Error(w, "Wrong password or email", http.StatusUnauthorized)
 		} else {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
@@ -187,4 +197,41 @@ func (h *Handler) UpdateNickname(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write([]byte(`{"message": "Nickname updated successfully"}`))
+}
+
+func (h *Handler) UpdatePassword(w http.ResponseWriter, r *http.Request) {
+	var req UpdatePasswordReq
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}(r.Body)
+
+	id, err := util.GetIdFromHeader(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	req = UpdatePasswordReq{Id: id, OldPassword: req.OldPassword, NewPassword: req.NewPassword}
+	ctx := r.Context()
+	err = h.Service.UpdatePassword(ctx, &req)
+	if err != nil {
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+			http.Error(w, "Wrong old password", http.StatusUnauthorized)
+		} else {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+
 }
