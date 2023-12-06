@@ -6,6 +6,7 @@ import (
 	"dungeons_helper_server/internal/alignment"
 	"dungeons_helper_server/internal/character"
 	"dungeons_helper_server/internal/class"
+	"dungeons_helper_server/internal/lobby"
 	"dungeons_helper_server/internal/races"
 	"dungeons_helper_server/internal/skills"
 	"dungeons_helper_server/internal/stats"
@@ -28,6 +29,7 @@ func main() {
 	classHandler := class.NewHandler(class.NewService(class.NewRepository(dbConn.GetDB())))
 	skillHandler := skills.NewHandler(skills.NewService(skills.NewRepository(dbConn.GetDB())))
 	characterHandler := character.NewHandler(character.NewService(character.NewRepository(dbConn.GetDB())))
+	lobbyHandler := lobby.NewHandler(lobby.NewService(lobby.NewRepository(dbConn.GetDB())))
 
 	r := router.InitRouter(
 		router.AccountRoutes(accountHandler),
@@ -38,6 +40,7 @@ func main() {
 		router.ClassRouter(classHandler),
 		router.SkillsRouter(skillHandler),
 		router.CharacterRouter(characterHandler),
+		router.LobbyRouter(lobbyHandler),
 	)
 
 	if err := router.Start("localhost:5000", r); err != nil {
