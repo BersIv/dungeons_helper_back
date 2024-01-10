@@ -19,14 +19,14 @@ func NewHandler(s Service) *Handler {
 }
 
 func (h *Handler) GetAllCharactersByAccId(w http.ResponseWriter, r *http.Request) {
-	idAcc, err := util.GetIdFromHeader(r)
+	idAcc, err := util.GetIdFromToken(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
 
 	ctx := r.Context()
-	res, err := h.Service.GetAllCharactersByAccId(ctx, idAcc)
+	res, err := h.Service.GetAllCharactersByAccId(ctx, int64(idAcc))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -44,7 +44,7 @@ func (h *Handler) GetAllCharactersByAccId(w http.ResponseWriter, r *http.Request
 }
 
 func (h *Handler) GetCharacterById(w http.ResponseWriter, r *http.Request) {
-	var id Character
+	var id GetCharacterReq
 	err := json.NewDecoder(r.Body).Decode(&id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -84,7 +84,7 @@ func (h *Handler) CreateCharacter(w http.ResponseWriter, r *http.Request) {
 		}
 	}(r.Body)
 
-	idAcc, err := util.GetIdFromHeader(r)
+	idAcc, err := util.GetIdFromToken(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return

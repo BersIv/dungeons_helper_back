@@ -15,7 +15,7 @@ type MyJWTClaims struct {
 	jwt.RegisteredClaims
 }
 
-func GetIdFromHeader(r *http.Request) (int64, error) {
+func GetIdFromToken(r *http.Request) (int64, error) {
 	authHeader := r.Header.Get("Authorization")
 	if authHeader == "" {
 		return 0, errors.New("Authorization header is missing")
@@ -42,4 +42,33 @@ func GetIdFromHeader(r *http.Request) (int64, error) {
 	}
 
 	return claims.Id, nil
+}
+
+func GetNickNameFromToken(r *http.Request) (string, error) {
+	authHeader := r.Header.Get("Authorization")
+	if authHeader == "" {
+		return "", errors.New("Authorization header is missing")
+	}
+
+	splitToken := strings.Split(authHeader, "Bearer ")
+	if len(splitToken) != 2 {
+		return "", errors.New("Invalid token format")
+	}
+
+	tokenString := splitToken[1]
+
+	secret := os.Getenv("SECRET_KEY")
+	token, err := jwt.ParseWithClaims(tokenString, &MyJWTClaims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secret), nil
+	})
+	if err != nil {
+		return "", err
+	}
+
+	claims, ok := token.Claims.(*MyJWTClaims)
+	if !ok || !token.Valid {
+		return "", errors.New("Invalid token")
+	}
+
+	return claims.Nickname, nil
 }

@@ -177,7 +177,7 @@ func (h *Handler) UpdateNickname(w http.ResponseWriter, r *http.Request) {
 		}
 	}(r.Body)
 
-	id, err := util.GetIdFromHeader(r)
+	id, err := util.GetIdFromToken(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -214,7 +214,7 @@ func (h *Handler) UpdatePassword(w http.ResponseWriter, r *http.Request) {
 		}
 	}(r.Body)
 
-	id, err := util.GetIdFromHeader(r)
+	id, err := util.GetIdFromToken(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return

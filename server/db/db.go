@@ -39,7 +39,19 @@ func NewDatabase() (*Database, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Database{db: db}, nil
+
+	database := &Database{db: db}
+
+	err = database.ClearLobbyTable()
+	if err != nil {
+		return nil, err
+	}
+
+	err = database.ClearAccLobbyTable()
+	if err != nil {
+		return nil, err
+	}
+	return database, nil
 }
 
 func (d *Database) Close() {
@@ -51,4 +63,14 @@ func (d *Database) Close() {
 
 func (d *Database) GetDB() *sql.DB {
 	return d.db
+}
+
+func (d *Database) ClearLobbyTable() error {
+	_, err := d.db.Exec("DELETE FROM lobby")
+	return err
+}
+
+func (d *Database) ClearAccLobbyTable() error {
+	_, err := d.db.Exec("DELETE FROM acclobby")
+	return err
 }

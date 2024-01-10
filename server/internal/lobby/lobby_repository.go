@@ -57,7 +57,7 @@ func (r *repository) CreateLobby(ctx context.Context, lobby *CreateLobbyReq) (*C
 func (r *repository) GetAllLobby(ctx context.Context) ([]GetLobbyRes, error) {
 	var lobbyList []GetLobbyRes
 
-	query := `SELECT l.id, l.lobbyName, a.nickname FROM lobby l 
+	query := `SELECT l.id, l.lobbyName, count(ac.idAcc) FROM lobby l 
     LEFT JOIN acclobby ac on l.id = ac.idLobby 
     LEFT JOIN account a on ac.idAcc = a.id`
 

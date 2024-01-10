@@ -23,3 +23,8 @@ drop table dnd.class;
 drop table dnd.alignment;
 
 drop table dnd.lobby;
+
+SELECT l.id, l.lobbyName, count(ac.idAcc) FROM lobby l
+                                                   LEFT JOIN acclobby ac on l.id = ac.idLobby
+                                                   LEFT JOIN account a on ac.idAcc = a.id
+GROUP BY l.id, l.lobbyName

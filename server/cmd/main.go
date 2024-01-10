@@ -11,6 +11,7 @@ import (
 	"dungeons_helper/internal/skills"
 	"dungeons_helper/internal/stats"
 	"dungeons_helper/internal/subraces"
+	"dungeons_helper/internal/websocket"
 	"dungeons_helper/router"
 	"log"
 )
@@ -31,6 +32,10 @@ func main() {
 	characterHandler := character.NewHandler(character.NewService(character.NewRepository(dbConn.GetDB())))
 	lobbyHandler := lobby.NewHandler(lobby.NewService(lobby.NewRepository(dbConn.GetDB())))
 
+	hub := websocket.NewHub(dbConn.GetDB())
+	go hub.Run()
+	wsHandler := websocket.NewHandler(dbConn.GetDB(), hub)
+
 	r := router.InitRouter(
 		router.AccountRoutes(accountHandler),
 		router.RacesRouter(racesHandler),
@@ -41,6 +46,7 @@ func main() {
 		router.SkillsRouter(skillHandler),
 		router.CharacterRouter(characterHandler),
 		router.LobbyRouter(lobbyHandler),
+		router.WebsocketRouter(wsHandler),
 	)
 
 	if err := router.Start("localhost:5000", r); err != nil {

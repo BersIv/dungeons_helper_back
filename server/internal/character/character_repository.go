@@ -61,7 +61,7 @@ func (r *repository) GetCharacterById(ctx context.Context, id int64) (*Character
 	char := Character{}
 	var imageBytes []byte
 
-	query := "SELECT c.hp, c.exp, c.charName, c.sex, c.weight, c.height, c.addLanguage, " +
+	query := "SELECT c.id, c.hp, c.exp, c.charName, c.sex, c.weight, c.height, c.addLanguage, " +
 		"c.ideals, c.weaknesses, c.traits, c.allies, c.organizations, c.enemies, c.story, " +
 		"c.goals, c.treasures, c.notes, cl.className, r.raceName, s.subraceName, st.strength, " +
 		"st.dexterity, st.constitution, st.intelligence, st.wisdom, st.charisma, " +
@@ -73,7 +73,7 @@ func (r *repository) GetCharacterById(ctx context.Context, id int64) (*Character
 		"JOIN skills sk on cs.idSkill = sk.id JOIN alignment a on c.idAlignment = a.id " +
 		"JOIN image i ON c.idAvatar = i.id WHERE c.id = ? GROUP BY c.id"
 
-	err := r.db.QueryRowContext(ctx, query, id).Scan(&char.Hp, &char.Exp, &char.CharName, &char.Sex, &char.Weight, &char.Height, &char.AddLanguage,
+	err := r.db.QueryRowContext(ctx, query, id).Scan(&char.Id, &char.Hp, &char.Exp, &char.CharName, &char.Sex, &char.Weight, &char.Height, &char.AddLanguage,
 		&char.Ideals, &char.Weaknesses, &char.Traits, &char.Allies, &char.Organizations, &char.Enemies,
 		&char.Story, &char.Goals, &char.Treasures, &char.Notes, &char.Class.ClassName, &char.Race.RaceName,
 		&char.Subrace.SubraceName, &char.Stats.Strength, &char.Stats.Dexterity, &char.Stats.Constitution,
@@ -153,6 +153,56 @@ func (r *repository) CreateCharacter(ctx context.Context, char *CreateCharacterR
 
 	query = `INSERT INTO accchar(act, idAccount, idChar) VALUES (?, ?, ?)`
 	_, err = tx.ExecContext(ctx, query, true, idAcc, charId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *repository) UpdateCharacterHpById(ctx context.Context, id int64, hp int64) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			err := tx.Rollback()
+			if err != nil {
+				return
+			}
+			return
+		}
+		err = tx.Commit()
+	}()
+
+	query := "UPDATE characters SET hp = ? WHERE id = ?"
+	_, err = tx.ExecContext(ctx, query, hp, id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *repository) UpdateCharacterExpById(ctx context.Context, id int64, hp int64) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			err := tx.Rollback()
+			if err != nil {
+				return
+			}
+			return
+		}
+		err = tx.Commit()
+	}()
+
+	query := "UPDATE characters SET exp = ? WHERE id = ?"
+	_, err = tx.ExecContext(ctx, query, hp, id)
 	if err != nil {
 		return err
 	}

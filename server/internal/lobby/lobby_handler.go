@@ -32,13 +32,13 @@ func (h *Handler) CreateLobby(w http.ResponseWriter, r *http.Request) {
 		}
 	}(r.Body)
 
-	idAcc, err := util.GetIdFromHeader(r)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusUnauthorized)
-		return
-	}
+	//idAcc, err := util.GetIdFromToken(r)
+	//if err != nil {
+	//	http.Error(w, err.Error(), http.StatusUnauthorized)
+	//	return
+	//}
 
-	lobbyReq = CreateLobbyReq{LobbyMasterID: idAcc, LobbyPassword: lobbyReq.LobbyPassword, LobbyName: lobbyReq.LobbyName}
+	lobbyReq = CreateLobbyReq{LobbyMasterID: lobbyReq.LobbyMasterID, LobbyPassword: lobbyReq.LobbyPassword, LobbyName: lobbyReq.LobbyName, Amount: lobbyReq.Amount}
 	ctx := r.Context()
 	res, err := h.Service.CreateLobby(ctx, &lobbyReq)
 	if err != nil {
@@ -58,7 +58,7 @@ func (h *Handler) CreateLobby(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) GetAllLobby(w http.ResponseWriter, r *http.Request) {
-	_, err := util.GetIdFromHeader(r)
+	_, err := util.GetIdFromToken(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
@@ -83,7 +83,7 @@ func (h *Handler) GetAllLobby(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) JoinLobby(w http.ResponseWriter, r *http.Request) {
-	idAcc, err := util.GetIdFromHeader(r)
+	idAcc, err := util.GetIdFromToken(r)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return

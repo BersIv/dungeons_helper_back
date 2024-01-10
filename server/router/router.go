@@ -10,6 +10,7 @@ import (
 	"dungeons_helper/internal/skills"
 	"dungeons_helper/internal/stats"
 	"dungeons_helper/internal/subraces"
+	"dungeons_helper/internal/websocket"
 	"fmt"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -31,7 +32,7 @@ type responseWriterWithStatus struct {
 
 func (r *responseWriterWithStatus) WriteHeader(statusCode int) {
 	r.statusCode = statusCode
-	r.ResponseWriter.WriteHeader(statusCode)
+	//r.ResponseWriter.WriteHeader(statusCode)
 }
 
 type Option func(router *mux.Router)
@@ -99,9 +100,17 @@ func LobbyRouter(lobbyHandler *lobby.Handler) Option {
 	}
 }
 
+func WebsocketRouter(wsHandler *websocket.Handler) Option {
+	return func(r *mux.Router) {
+		r.HandleFunc("/ws/join", wsHandler.JoinLobby)
+		r.HandleFunc("/ws/create", wsHandler.CreateLobby)
+	}
+}
+
 func InitRouter(options ...Option) *mux.Router {
 	r := mux.NewRouter()
-	r.Use(LoggingMiddleware)
+	//r.Use(LoggingMiddleware)
+
 	for _, option := range options {
 		option(r)
 	}

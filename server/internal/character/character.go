@@ -40,8 +40,8 @@ type Character struct {
 }
 
 type CreateCharacterReq struct {
-	IdAcc           int64               `json:"idAcc"`
-	Id              int64               `json:"id"`
+	IdAcc int64 `json:"idAcc"`
+	//Id              int64               `json:"id"`
 	Hp              int64               `json:"hp"`
 	Exp             int64               `json:"exp"`
 	Avatar          images.Images       `json:"Avatar"`
@@ -76,6 +76,7 @@ type Repository interface {
 	GetAllCharactersByAccId(ctx context.Context, idAcc int64) ([]Character, error)
 	GetCharacterById(ctx context.Context, id int64) (*Character, error)
 	CreateCharacter(ctx context.Context, character *CreateCharacterReq, idAcc int64) error
+	UpdateCharacterHpById(ctx context.Context, id int64, hp int64) error
 }
 
 type Service interface {
