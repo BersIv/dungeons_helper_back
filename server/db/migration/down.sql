@@ -1,10 +1,10 @@
-drop table dnd.accchar;
+drop table dnd.accChar;
 
-drop table dnd.acclobby;
+drop table dnd.accLobby;
 
 drop table dnd.account;
 
-drop table dnd.charskills;
+drop table dnd.charSkills;
 
 drop table dnd.characters;
 
@@ -23,8 +23,3 @@ drop table dnd.class;
 drop table dnd.alignment;
 
 drop table dnd.lobby;
-
-SELECT l.id, l.lobbyName, count(ac.idAcc) FROM lobby l
-                                                   LEFT JOIN acclobby ac on l.id = ac.idLobby
-                                                   LEFT JOIN account a on ac.idAcc = a.id
-GROUP BY l.id, l.lobbyName

@@ -44,7 +44,7 @@ func (r *repository) CreateLobby(ctx context.Context, lobby *CreateLobbyReq) (*C
 		return nil, err
 	}
 
-	query = `INSERT INTO acclobby(idAcc, idLobby) 
+	query = `INSERT INTO accLobby(idAcc, idLobby) 
 				VALUES (?, ?)`
 	_, err = tx.ExecContext(ctx, query, &lobby.LobbyMasterID, lobbyRes.Id)
 	if err != nil {
@@ -58,7 +58,7 @@ func (r *repository) GetAllLobby(ctx context.Context) ([]GetLobbyRes, error) {
 	var lobbyList []GetLobbyRes
 
 	query := `SELECT l.id, l.lobbyName, count(ac.idAcc) FROM lobby l 
-    LEFT JOIN acclobby ac on l.id = ac.idLobby 
+    LEFT JOIN accLobby ac on l.id = ac.idLobby 
     LEFT JOIN account a on ac.idAcc = a.id`
 
 	rows, err := r.db.QueryContext(ctx, query)
@@ -96,7 +96,7 @@ func (r *repository) JoinLobby(ctx context.Context, req *JoinLobbyReq) ([]charac
 		return nil, err
 	}
 
-	query = "INSERT INTO acclobby(idAcc, idLobby) VALUES (?, ?)"
+	query = "INSERT INTO accLobby(idAcc, idLobby) VALUES (?, ?)"
 	_, err = r.db.ExecContext(ctx, query, req.IdAcc, req.IdLobby)
 	if err != nil {
 		return nil, err
@@ -112,7 +112,7 @@ func (r *repository) JoinLobby(ctx context.Context, req *JoinLobbyReq) ([]charac
 		"JOIN races r on c.idRace = r.id JOIN subrace s on c.idSubrace = s.id " +
 		"JOIN stats st on c.idStats = st.id JOIN charSkills cs on c.id = cs.idChar " +
 		"JOIN skills sk on cs.idSkill = sk.id JOIN alignment a on c.idAlignment = a.id " +
-		"JOIN image i ON c.idAvatar = i.id LEFT JOIN acclobby al on ac.id = al.idAcc " +
+		"JOIN image i ON c.idAvatar = i.id LEFT JOIN accLobby al on ac.id = al.idAcc " +
 		"WHERE al.idLobby = ? AND ac.act = true GROUP BY c.id"
 
 	rows, err := r.db.QueryContext(ctx, query, req.IdLobby)

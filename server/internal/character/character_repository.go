@@ -137,7 +137,7 @@ func (r *repository) CreateCharacter(ctx context.Context, char *CreateCharacterR
 		return err
 	}
 
-	query = "INSERT INTO charskills(idSkill, idChar) VALUES (?, ?)"
+	query = "INSERT INTO charSkills(idSkill, idChar) VALUES (?, ?)"
 	for _, skill := range char.CharacterSkills {
 		_, err = tx.ExecContext(ctx, query, skill.Id, charId)
 		if err != nil {
@@ -145,13 +145,13 @@ func (r *repository) CreateCharacter(ctx context.Context, char *CreateCharacterR
 		}
 	}
 
-	query = `UPDATE accchar SET act = false WHERE idAccount = ?`
+	query = `UPDATE accChar SET act = false WHERE idAccount = ?`
 	_, err = tx.ExecContext(ctx, query, idAcc)
 	if err != nil {
 		return err
 	}
 
-	query = `INSERT INTO accchar(act, idAccount, idChar) VALUES (?, ?, ?)`
+	query = `INSERT INTO accChar(act, idAccount, idChar) VALUES (?, ?, ?)`
 	_, err = tx.ExecContext(ctx, query, true, idAcc, charId)
 	if err != nil {
 		return err

@@ -1,11 +1,11 @@
-create table image
+create table `image`
 (
     id    int auto_increment
         primary key,
     image blob not null
 );
 
-create table account
+create table `account`
 (
     id       int auto_increment
         primary key,
@@ -17,7 +17,7 @@ create table account
         foreign key (idAvatar) references image (id)
 );
 
-create table stats
+create table `stats`
 (
     id           int auto_increment
         primary key,
@@ -29,14 +29,14 @@ create table stats
     charisma     int not null
 );
 
-create table races
+create table `races`
 (
     id       int auto_increment
         primary key,
     raceName varchar(20) not null unique
 );
 
-create table subrace
+create table `subrace`
 (
     id          int auto_increment
         primary key,
@@ -49,7 +49,7 @@ create table subrace
         foreign key (idRace) references races (id)
 );
 
-create table skills
+create table `skills`
 (
     id        int auto_increment
         primary key,
@@ -59,21 +59,21 @@ create table skills
         foreign key (idStats) references stats (id)
 );
 
-create table class
+create table `class`
 (
     id        int auto_increment
         primary key,
     className varchar(20) not null unique
 );
 
-create table alignment
+create table `alignment`
 (
     id            int auto_increment
         primary key,
     alignmentName varchar(20) not null unique
 );
 
-create table characters
+create table `characters`
 (
     id            int auto_increment
         primary key,
@@ -116,7 +116,7 @@ create table characters
         foreign key (idAlignment) references alignment (id)
 );
 
-create table charSkills
+create table `charSkills`
 (
     id      int auto_increment
         primary key,
@@ -130,7 +130,7 @@ create table charSkills
         unique (idChar, idSkill)
 );
 
-create table accChar
+create table `accChar`
 (
     id        int auto_increment
         primary key,
@@ -155,7 +155,7 @@ BEGIN
     END IF;
 END;
 
-create table lobby
+create table `lobby`
 (
     id            int auto_increment
         primary key,
@@ -165,7 +165,7 @@ create table lobby
     amount        int
 );
 
-create table accLobby
+create table `accLobby`
 (
     id      int auto_increment
         primary key,

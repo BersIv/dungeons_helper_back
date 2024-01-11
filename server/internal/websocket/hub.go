@@ -6,6 +6,7 @@ import (
 	"dungeons_helper/internal/character"
 	"dungeons_helper/internal/lobby"
 	"fmt"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -52,7 +53,7 @@ func (h *Hub) Run() {
 				sendErrorMessage(cl.Conn, "Failed to start transaction")
 				continue
 			}
-			query := `INSERT INTO acclobby(idAcc, idLobby) VALUES (?, ?)`
+			query := `INSERT INTO accLobby(idAcc, idLobby) VALUES (?, ?)`
 			_, err = tx.ExecContext(ctx, query, cl.Id, cl.IdLobby)
 			if err != nil {
 				fmt.Println(err)
@@ -77,7 +78,7 @@ func (h *Hub) Run() {
 				sendErrorMessage(cl.Conn, "Failed to start transaction")
 				continue
 			}
-			query := `DELETE FROM acclobby WHERE idAcc = ? AND idLobby = ?`
+			query := `DELETE FROM accLobby WHERE idAcc = ? AND idLobby = ?`
 			_, err = tx.ExecContext(ctx, query, cl.Id, cl.IdLobby)
 			if err != nil {
 				fmt.Println(err)

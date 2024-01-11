@@ -4,9 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"os"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
-	"os"
 )
 
 type Database struct {
@@ -71,6 +72,6 @@ func (d *Database) ClearLobbyTable() error {
 }
 
 func (d *Database) ClearAccLobbyTable() error {
-	_, err := d.db.Exec("DELETE FROM acclobby")
+	_, err := d.db.Exec("DELETE FROM accLobby")
 	return err
 }

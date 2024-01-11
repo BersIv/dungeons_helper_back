@@ -17,6 +17,7 @@ import (
 )
 
 func main() {
+	log.Printf("Server is starting...")
 	dbConn, err := db.NewDatabase()
 	if err != nil {
 		log.Fatalf("Could not initialize database connection: %s", err)
@@ -48,6 +49,8 @@ func main() {
 		router.LobbyRouter(lobbyHandler),
 		router.WebsocketRouter(wsHandler),
 	)
+
+	log.Printf("Server started")
 
 	if err := router.Start("localhost:5000", r); err != nil {
 		log.Fatalf("Failed to start server: %s", err)
