@@ -4,7 +4,7 @@ import (
 	"context"
 	"dungeons_helper/internal/alignment"
 	"dungeons_helper/internal/class"
-	"dungeons_helper/internal/images"
+	"dungeons_helper/internal/image"
 	"dungeons_helper/internal/races"
 	"dungeons_helper/internal/skills"
 	"dungeons_helper/internal/stats"
@@ -15,7 +15,7 @@ type Character struct {
 	Id              int64               `json:"id"`
 	Hp              int64               `json:"hp"`
 	Exp             int64               `json:"exp"`
-	Avatar          images.Images       `json:"Avatar"`
+	Avatar          image.Image         `json:"Avatar"`
 	CharName        string              `json:"charName"`
 	Sex             bool                `json:"sex"`
 	Weight          int64               `json:"weight"`
@@ -44,7 +44,7 @@ type CreateCharacterReq struct {
 	//Id              int64               `json:"id"`
 	Hp              int64               `json:"hp"`
 	Exp             int64               `json:"exp"`
-	Avatar          images.Images       `json:"Avatar"`
+	Avatar          image.Image         `json:"Avatar"`
 	CharName        string              `json:"charName"`
 	Sex             bool                `json:"sex"`
 	Weight          int64               `json:"weight"`

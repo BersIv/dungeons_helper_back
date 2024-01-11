@@ -1,17 +1,19 @@
 package util
 
 import (
+	"dungeons_helper/internal/image"
 	"errors"
-	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"os"
 	"strings"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type MyJWTClaims struct {
-	Id       int64  `json:"id"`
-	Nickname string `json:"nickname"`
-	IdAvatar int64  `json:"idAvatar"`
+	Id       int64       `json:"id"`
+	Nickname string      `json:"nickname"`
+	Avatar   image.Image `json:"idAvatar"`
 	jwt.RegisteredClaims
 }
 

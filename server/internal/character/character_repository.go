@@ -107,7 +107,7 @@ func (r *repository) CreateCharacter(ctx context.Context, char *CreateCharacterR
 	if err != nil {
 		return err
 	}
-	imageId, err := result.LastInsertId()
+	idImage, err := result.LastInsertId()
 	if err != nil {
 		return err
 	}
@@ -126,7 +126,7 @@ func (r *repository) CreateCharacter(ctx context.Context, char *CreateCharacterR
                        idRace, idSubrace, idStats, addLanguage, idAlignment, ideals, weaknesses, 
                        traits, allies, organizations, enemies, story, goals, treasures, notes)  
 					   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-	result, err = tx.ExecContext(ctx, query, char.Hp, char.Exp, imageId, char.CharName, char.Sex, char.Weight, char.Height,
+	result, err = tx.ExecContext(ctx, query, char.Hp, char.Exp, idImage, char.CharName, char.Sex, char.Weight, char.Height,
 		char.Class.Id, char.Race.Id, char.Subrace.Id, statsId, char.AddLanguage, char.Alignment.Id, char.Ideals,
 		char.Weaknesses, char.Traits, char.Allies, char.Organizations, char.Enemies, char.Story, char.Goals, char.Treasures, char.Notes)
 	if err != nil {

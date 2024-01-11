@@ -2,11 +2,13 @@ package account
 
 import (
 	"context"
+	"dungeons_helper/internal/image"
 	util2 "dungeons_helper/util"
-	"github.com/golang-jwt/jwt/v5"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type service struct {
@@ -30,11 +32,11 @@ func (s *service) CreateAccount(c context.Context, req *CreateAccountReq) error 
 		return err
 	}
 
-	account := &Account{
+	account := &CreateAccountReq{
 		Email:    req.Email,
 		Password: hashedPassword,
 		Nickname: req.Nickname,
-		IdAvatar: req.IdAvatar,
+		Avatar:   req.Avatar,
 	}
 
 	err = s.Repository.CreateAccount(ctx, account)
@@ -62,7 +64,7 @@ func (s *service) Login(c context.Context, req *LoginAccountReq) (*LoginAccountR
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, util2.MyJWTClaims{
 		Id:       account.Id,
 		Nickname: account.Nickname,
-		IdAvatar: account.IdAvatar,
+		Avatar:   image.Image{},
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    strconv.Itoa(int(account.Id)),
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
@@ -73,7 +75,7 @@ func (s *service) Login(c context.Context, req *LoginAccountReq) (*LoginAccountR
 	if err != nil {
 		return nil, err
 	}
-	return &LoginAccountRes{accessToken: ss, Id: account.Id, Email: account.Email, Nickname: account.Nickname, IdAvatar: account.IdAvatar}, nil
+	return &LoginAccountRes{accessToken: ss, Id: account.Id, Email: account.Email, Nickname: account.Nickname, Avatar: account.Avatar}, nil
 }
 
 func (s *service) RestorePassword(c context.Context, email string) (string, error) {

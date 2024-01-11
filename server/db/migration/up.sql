@@ -1,3 +1,5 @@
+use dnd;
+
 create table `image`
 (
     id    int auto_increment

@@ -1,13 +1,16 @@
 package account
 
-import "context"
+import (
+	"context"
+	"dungeons_helper/internal/image"
+)
 
 type Account struct {
-	Id       int64  `json:"id"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Nickname string `json:"nickname"`
-	IdAvatar int64  `json:"IdAvatar"`
+	Id       int64       `json:"id"`
+	Email    string      `json:"email"`
+	Password string      `json:"password"`
+	Nickname string      `json:"nickname"`
+	Avatar   image.Image `json:"avatar"`
 }
 
 type IdAccountReq struct {
@@ -18,7 +21,7 @@ type CreateAccountReq struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
 	Nickname string `json:"nickname"`
-	IdAvatar int64  `json:"IdAvatar"`
+	Avatar   string `json:"avatar"`
 }
 
 type LoginAccountReq struct {
@@ -28,10 +31,11 @@ type LoginAccountReq struct {
 
 type LoginAccountRes struct {
 	accessToken string
-	Id          int64  `json:"id"`
-	Email       string `json:"email"`
-	Nickname    string `json:"nickname"`
-	IdAvatar    int64  `json:"IdAvatar"`
+	Id          int64       `json:"id"`
+	Email       string      `json:"email"`
+	Nickname    string      `json:"nickname"`
+	Avatar      image.Image `json:"IdAvatar"`
+	Password    string      `json:"password"`
 }
 
 type UpdateNicknameReq struct {
@@ -46,11 +50,11 @@ type UpdatePasswordReq struct {
 }
 
 type Repository interface {
-	CreateAccount(ctx context.Context, account *Account) error
-	GetAccountByEmail(ctx context.Context, email string) (*Account, error)
-	GetAccountById(ctx context.Context, id int64) (*Account, error)
-	UpdatePassword(ctx context.Context, account *Account) error
-	UpdateNickname(ctx context.Context, account *Account) error
+	CreateAccount(ctx context.Context, account *CreateAccountReq) error
+	GetAccountByEmail(ctx context.Context, email string) (*LoginAccountRes, error)
+	GetAccountById(ctx context.Context, id int64) (*LoginAccountRes, error)
+	UpdatePassword(ctx context.Context, account *LoginAccountRes) error
+	UpdateNickname(ctx context.Context, account *LoginAccountRes) error
 }
 
 type Service interface {
