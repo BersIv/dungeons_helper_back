@@ -52,7 +52,7 @@ func main() {
 
 	log.Printf("Server started")
 
-	if err := router.Start("localhost:5000", r); err != nil {
+	if err := router.Start("0.0.0.0:5000", r); err != nil {
 		log.Fatalf("Failed to start server: %s", err)
 	}
 }
