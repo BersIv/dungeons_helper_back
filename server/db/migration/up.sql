@@ -145,6 +145,7 @@ create table `accChar`
         foreign key (idChar) references characters (id)
 );
 
+DELIMITER //
 CREATE TRIGGER unique_act_true
     BEFORE INSERT
     ON accChar
@@ -156,6 +157,8 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Only one record with act = true allowed per account';
     END IF;
 END;
+//
+DELIMITER;
 
 create table `lobby`
 (
