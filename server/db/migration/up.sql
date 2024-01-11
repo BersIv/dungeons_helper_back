@@ -158,7 +158,7 @@ BEGIN
     END IF;
 END;
 //
-DELIMITER;
+DELIMITER ;
 
 create table `lobby`
 (
