@@ -46,10 +46,10 @@ func (s *service) CreateAccount(c context.Context, req *CreateAccountReq) error 
 		return err
 	}
 
-	err = sendWelcomeEmail(req.Email)
-	if err != nil {
-		return err
-	}
+	// err = sendWelcomeEmail(req.Email)
+	// if err != nil {
+	// 	return err
+	// }
 
 	return nil
 }
@@ -156,38 +156,32 @@ func (s *service) UpdatePassword(c context.Context, req *UpdatePasswordReq) erro
 }
 
 func sendWelcomeEmail(toEmail string) error {
-	// Параметры для почтового сервера mail.ru
 	smtpHost := "smtp.gmail.com"
 	smtpPort := 587
 	smtpUsername := "ivanbers1998@gmail.com"
 	smtpPassword := "tajh doie vrtv azfj"
 
-	// Сообщение для отправки
 	subject := "Добро пожаловать!"
 	body := "Спасибо за регистрацию!"
 
-	// Формирование заголовков сообщения
 	headers := make(map[string]string)
 	headers["From"] = smtpUsername
 	headers["To"] = toEmail
 	headers["Subject"] = subject
 
-	// Формирование тела сообщения
 	message := ""
 	for key, value := range headers {
 		message += key + ": " + value + "\r\n"
 	}
 	message += "\r\n" + body
 
-	// Настройка параметров аутентификации
 	auth := smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost)
 
-	// Формирование адреса сервера
 	serverAddr := fmt.Sprintf("%s:%d", smtpHost, smtpPort)
 	fmt.Println(serverAddr)
 	fmt.Println(auth)
 	fmt.Println(smtpUsername)
-	// Отправка письма
+
 	err := smtp.SendMail(serverAddr, auth, smtpUsername, []string{toEmail}, []byte(message))
 	if err != nil {
 		return err
