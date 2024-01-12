@@ -3,7 +3,9 @@ package account
 import (
 	"context"
 	"dungeons_helper/internal/image"
-	util2 "dungeons_helper/util"
+	"dungeons_helper/util"
+	"fmt"
+	"net/smtp"
 	"os"
 	"strconv"
 	"time"
@@ -27,7 +29,7 @@ func (s *service) CreateAccount(c context.Context, req *CreateAccountReq) error 
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
-	hashedPassword, err := util2.HashPassword(req.Password)
+	hashedPassword, err := util.HashPassword(req.Password)
 	if err != nil {
 		return err
 	}
@@ -44,6 +46,11 @@ func (s *service) CreateAccount(c context.Context, req *CreateAccountReq) error 
 		return err
 	}
 
+	err = sendWelcomeEmail(req.Email)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -56,12 +63,12 @@ func (s *service) Login(c context.Context, req *LoginAccountReq) (*LoginAccountR
 		return nil, err
 	}
 
-	err = util2.CheckPassword(req.Password, account.Password)
+	err = util.CheckPassword(req.Password, account.Password)
 	if err != nil {
 		return nil, err
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, util2.MyJWTClaims{
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, util.MyJWTClaims{
 		Id:       account.Id,
 		Nickname: account.Nickname,
 		Avatar:   image.Image{},
@@ -87,8 +94,8 @@ func (s *service) RestorePassword(c context.Context, email string) (string, erro
 		return "", err
 	}
 
-	tempPassword := util2.GeneratePassword()
-	hashedPassword, err := util2.HashPassword(tempPassword)
+	tempPassword := util.GeneratePassword()
+	hashedPassword, err := util.HashPassword(tempPassword)
 	if err != nil {
 		return "", err
 	}
@@ -129,18 +136,59 @@ func (s *service) UpdatePassword(c context.Context, req *UpdatePasswordReq) erro
 		return err
 	}
 
-	err = util2.CheckPassword(req.OldPassword, account.Password)
+	err = util.CheckPassword(req.OldPassword, account.Password)
 	if err != nil {
 		return err
 	}
 
-	hashedPassword, err := util2.HashPassword(req.NewPassword)
+	hashedPassword, err := util.HashPassword(req.NewPassword)
 	if err != nil {
 		return err
 	}
 
 	account.Password = hashedPassword
 	err = s.Repository.UpdatePassword(ctx, account)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func sendWelcomeEmail(toEmail string) error {
+	// Параметры для почтового сервера mail.ru
+	smtpHost := "smtp.gmail.com"
+	smtpPort := 587
+	smtpUsername := "ivanbers1998@gmail.com"
+	smtpPassword := "tajh doie vrtv azfj"
+
+	// Сообщение для отправки
+	subject := "Добро пожаловать!"
+	body := "Спасибо за регистрацию!"
+
+	// Формирование заголовков сообщения
+	headers := make(map[string]string)
+	headers["From"] = smtpUsername
+	headers["To"] = toEmail
+	headers["Subject"] = subject
+
+	// Формирование тела сообщения
+	message := ""
+	for key, value := range headers {
+		message += key + ": " + value + "\r\n"
+	}
+	message += "\r\n" + body
+
+	// Настройка параметров аутентификации
+	auth := smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost)
+
+	// Формирование адреса сервера
+	serverAddr := fmt.Sprintf("%s:%d", smtpHost, smtpPort)
+	fmt.Println(serverAddr)
+	fmt.Println(auth)
+	fmt.Println(smtpUsername)
+	// Отправка письма
+	err := smtp.SendMail(serverAddr, auth, smtpUsername, []string{toEmail}, []byte(message))
 	if err != nil {
 		return err
 	}
