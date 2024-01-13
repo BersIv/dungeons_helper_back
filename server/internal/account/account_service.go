@@ -46,10 +46,10 @@ func (s *service) CreateAccount(c context.Context, req *CreateAccountReq) error 
 		return err
 	}
 
-	// err = sendWelcomeEmail(req.Email)
-	// if err != nil {
-	// 	return err
-	// }
+	err = sendWelcomeEmail(req.Email)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -156,10 +156,10 @@ func (s *service) UpdatePassword(c context.Context, req *UpdatePasswordReq) erro
 }
 
 func sendWelcomeEmail(toEmail string) error {
-	smtpHost := "smtp.gmail.com"
-	smtpPort := 587
-	smtpUsername := "ivanbers1998@gmail.com"
-	smtpPassword := "tajh doie vrtv azfj"
+	smtpHost := os.Getenv("SMTP_HOST")
+	smtpPort, _ := strconv.Atoi(os.Getenv("SMTP_PORT"))
+	smtpUsername := os.Getenv("SMTP_USERNAME")
+	smtpPassword := os.Getenv("SMTP_PASSWORD")
 
 	subject := "Добро пожаловать!"
 	body := "Спасибо за регистрацию!"
