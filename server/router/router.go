@@ -114,7 +114,7 @@ func InitRouter(options ...Option) *mux.Router {
 	//r.Use(LoggingMiddleware)
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "C:/Users/BersI/GolandProjects/dungeons_helper/server/templates/index.html")
+		http.ServeFile(w, r, "root/dungeons_helper_back/server/templates/index.html")
 	}).Methods("GET")
 
 	for _, option := range options {

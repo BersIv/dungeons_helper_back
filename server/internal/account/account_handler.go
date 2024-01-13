@@ -29,7 +29,7 @@ type Handler struct {
 
 func NewHandler(s Service) *Handler {
 	googleOAuthConfig := &oauth2.Config{
-		RedirectURL:  "http://localhost:5000/auth/google/callback",
+		RedirectURL:  "http://194.247.187.44.nip.io:5000/auth/google/callback",
 		ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
 		ClientSecret: os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
@@ -40,14 +40,6 @@ func NewHandler(s Service) *Handler {
 		Service:           s,
 		GoogleOAuthConfig: googleOAuthConfig,
 	}
-}
-
-var googleOauthConfig = &oauth2.Config{
-	RedirectURL:  "http://localhost:5000/auth/google/callback",
-	ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
-	ClientSecret: os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
-	Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
-	Endpoint:     google.Endpoint,
 }
 
 const oauthGoogleUrlAPI = "https://www.googleapis.com/oauth2/v2/userinfo?access_token="
