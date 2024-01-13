@@ -6,7 +6,6 @@ import (
 	"dungeons_helper/internal/alignment"
 	"dungeons_helper/internal/character"
 	"dungeons_helper/internal/class"
-	"dungeons_helper/internal/lobby"
 	"dungeons_helper/internal/races"
 	"dungeons_helper/internal/skills"
 	"dungeons_helper/internal/stats"
@@ -31,7 +30,7 @@ func main() {
 	classHandler := class.NewHandler(class.NewService(class.NewRepository(dbConn.GetDB())))
 	skillHandler := skills.NewHandler(skills.NewService(skills.NewRepository(dbConn.GetDB())))
 	characterHandler := character.NewHandler(character.NewService(character.NewRepository(dbConn.GetDB())))
-	lobbyHandler := lobby.NewHandler(lobby.NewService(lobby.NewRepository(dbConn.GetDB())))
+	//lobbyHandler := lobby.NewHandler(lobby.NewService(lobby.NewRepository(dbConn.GetDB())))
 
 	hub := websocket.NewHub(dbConn.GetDB())
 	go hub.Run()
@@ -46,7 +45,7 @@ func main() {
 		router.ClassRouter(classHandler),
 		router.SkillsRouter(skillHandler),
 		router.CharacterRouter(characterHandler),
-		router.LobbyRouter(lobbyHandler),
+		//router.LobbyRouter(lobbyHandler),
 		router.WebsocketRouter(wsHandler),
 	)
 
