@@ -85,31 +85,31 @@ func (s *service) Login(c context.Context, req *LoginAccountReq) (*LoginAccountR
 	return &LoginAccountRes{accessToken: ss, Id: account.Id, Email: account.Email, Nickname: account.Nickname, Avatar: account.Avatar}, nil
 }
 
-func (s *service) RestorePassword(c context.Context, email string) (string, error) {
+func (s *service) RestorePassword(c context.Context, email string) error {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()
 
 	account, err := s.Repository.GetAccountByEmail(ctx, email)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	tempPassword := util.GeneratePassword()
 	hashedPassword, err := util.HashPassword(tempPassword)
 	if err != nil {
-		return "", err
+		return err
 	}
 
 	account.Password = hashedPassword
 	if err := s.Repository.UpdatePassword(ctx, account); err != nil {
-		return "", err
+		return err
 	}
 
-	err = sendNewPassword(account.Email, account.Password)
+	err = sendNewPassword(account.Email, tempPassword)
 	if err != nil {
-		return "", err
+		return err
 	}
-	return tempPassword, nil
+	return nil
 }
 
 func (s *service) UpdateNickname(c context.Context, req *UpdateNicknameReq) error {
