@@ -105,7 +105,10 @@ func (s *service) RestorePassword(c context.Context, email string) (string, erro
 		return "", err
 	}
 
-	//TODO: Send email with new password and delete tempPassword from return
+	err = sendNewPassword(account.Email, account.Password)
+	if err != nil {
+		return "", err
+	}
 	return tempPassword, nil
 }
 
@@ -155,14 +158,11 @@ func (s *service) UpdatePassword(c context.Context, req *UpdatePasswordReq) erro
 	return nil
 }
 
-func sendWelcomeEmail(toEmail string) error {
+func sendEmail(toEmail string, subject string, body string) error {
 	smtpHost := os.Getenv("SMTP_HOST")
 	smtpPort, _ := strconv.Atoi(os.Getenv("SMTP_PORT"))
 	smtpUsername := os.Getenv("SMTP_USERNAME")
 	smtpPassword := os.Getenv("SMTP_PASSWORD")
-
-	subject := "Добро пожаловать!"
-	body := "Спасибо за регистрацию!"
 
 	headers := make(map[string]string)
 	headers["From"] = smtpUsername
@@ -178,11 +178,32 @@ func sendWelcomeEmail(toEmail string) error {
 	auth := smtp.PlainAuth("", smtpUsername, smtpPassword, smtpHost)
 
 	serverAddr := fmt.Sprintf("%s:%d", smtpHost, smtpPort)
-	fmt.Println(serverAddr)
-	fmt.Println(auth)
-	fmt.Println(smtpUsername)
 
 	err := smtp.SendMail(serverAddr, auth, smtpUsername, []string{toEmail}, []byte(message))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func sendWelcomeEmail(toEmail string) error {
+	subject := "Добро пожаловать!"
+	body := "Спасибо за регистрацию!"
+
+	err := sendEmail(toEmail, subject, body)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func sendNewPassword(toEmail string, password string) error {
+	subject := "Восстановление пароля"
+	body := fmt.Sprintf("Новый пароль: %s", password)
+
+	err := sendEmail(toEmail, subject, body)
 	if err != nil {
 		return err
 	}

@@ -60,7 +60,7 @@ type Repository interface {
 type Service interface {
 	CreateAccount(c context.Context, req *CreateAccountReq) error
 	Login(c context.Context, req *LoginAccountReq) (*LoginAccountRes, error)
-	RestorePassword(c context.Context, email string) (string, error)
+	RestorePassword(c context.Context, email string) error
 	UpdateNickname(c context.Context, req *UpdateNicknameReq) error
 	UpdatePassword(c context.Context, req *UpdatePasswordReq) error
 }

@@ -5,12 +5,12 @@ import (
 	"dungeons_helper/util"
 	"encoding/json"
 	"errors"
-	"fmt"
-	"github.com/go-sql-driver/mysql"
-	"golang.org/x/crypto/bcrypt"
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/go-sql-driver/mysql"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Handler struct {
@@ -147,7 +147,7 @@ func (h *Handler) RestorePassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	ctx := r.Context()
-	pwd, err := h.Service.RestorePassword(ctx, restoreReq.Email)
+	err := h.Service.RestorePassword(ctx, restoreReq.Email)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) {
 			http.Error(w, "Wrong password or email", http.StatusRequestTimeout)
@@ -158,8 +158,6 @@ func (h *Handler) RestorePassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	response := fmt.Sprintf(`{"message": "Password reset instructions sent to your email. Temporary password: %s"}`, pwd)
-	_, _ = w.Write([]byte(response))
 }
 
 func (h *Handler) UpdateNickname(w http.ResponseWriter, r *http.Request) {
