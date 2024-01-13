@@ -40,23 +40,23 @@ type Option func(router *mux.Router)
 func AccountRoutes(accountHandler *account.Handler) Option {
 	return func(r *mux.Router) {
 		r.HandleFunc("/auth/registration", accountHandler.CreateAccount).Methods("POST")
-		r.HandleFunc("/auth/email", accountHandler.Login).Methods("POST")
+		r.HandleFunc("/auth/byEmail", accountHandler.Login).Methods("POST")
 		r.HandleFunc("/logout", accountHandler.Logout).Methods("POST")
-		r.HandleFunc("/auth/restore", accountHandler.RestorePassword).Methods("POST")
-		r.HandleFunc("/account/nick", accountHandler.UpdateNickname).Methods("PATCH")
-		r.HandleFunc("/account/password", accountHandler.UpdatePassword).Methods("PATCH")
+		r.HandleFunc("/auth/restorePassword", accountHandler.RestorePassword).Methods("POST")
+		r.HandleFunc("/account/change/nickname", accountHandler.UpdateNickname).Methods("PATCH")
+		r.HandleFunc("/account/change/password", accountHandler.UpdatePassword).Methods("PATCH")
 	}
 }
 
 func RacesRouter(racesHandler *races.Handler) Option {
 	return func(r *mux.Router) {
-		r.HandleFunc("/getRaces", racesHandler.GetAllRaces).Methods("GET")
+		r.HandleFunc("/race/getRaces", racesHandler.GetAllRaces).Methods("GET")
 	}
 }
 
 func SubracesRouter(subracesHandler *subraces.Handler) Option {
 	return func(r *mux.Router) {
-		r.HandleFunc("/getSubraces", subracesHandler.GetAllSubraces).Methods("GET")
+		r.HandleFunc("/subrace/getSubraces", subracesHandler.GetAllSubraces).Methods("GET")
 	}
 }
 

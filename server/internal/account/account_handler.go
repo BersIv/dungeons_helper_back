@@ -2,6 +2,7 @@ package account
 
 import (
 	"context"
+	"database/sql"
 	"dungeons_helper/util"
 	"encoding/json"
 	"errors"
@@ -75,7 +76,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	res, err := h.Service.Login(ctx, &account)
 	if err != nil {
-		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+		if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) || errors.Is(err, sql.ErrNoRows) {
 			http.Error(w, "Wrong password or email", http.StatusUnauthorized)
 		} else if errors.Is(err, context.DeadlineExceeded) {
 			http.Error(w, "Wrong password or email", http.StatusRequestTimeout)
@@ -149,7 +150,9 @@ func (h *Handler) RestorePassword(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	err := h.Service.RestorePassword(ctx, restoreReq.Email)
 	if err != nil {
-		if errors.Is(err, context.DeadlineExceeded) {
+		if errors.Is(err, sql.ErrNoRows) {
+			http.Error(w, "Wrong password or email", http.StatusUnauthorized)
+		} else if errors.Is(err, context.DeadlineExceeded) {
 			http.Error(w, "Wrong password or email", http.StatusRequestTimeout)
 		} else {
 			http.Error(w, err.Error(), http.StatusInternalServerError)

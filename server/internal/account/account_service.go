@@ -2,7 +2,6 @@ package account
 
 import (
 	"context"
-	"dungeons_helper/internal/image"
 	"dungeons_helper/util"
 	"fmt"
 	"net/smtp"
@@ -71,10 +70,9 @@ func (s *service) Login(c context.Context, req *LoginAccountReq) (*LoginAccountR
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, util.MyJWTClaims{
 		Id:       account.Id,
 		Nickname: account.Nickname,
-		Avatar:   image.Image{},
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    strconv.Itoa(int(account.Id)),
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 7)),
 		},
 	})
 	secretKey := os.Getenv("SECRET_KEY")

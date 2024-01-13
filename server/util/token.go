@@ -1,7 +1,6 @@
 package util
 
 import (
-	"dungeons_helper/internal/image"
 	"errors"
 	"net/http"
 	"os"
@@ -11,9 +10,8 @@ import (
 )
 
 type MyJWTClaims struct {
-	Id       int64       `json:"id"`
-	Nickname string      `json:"nickname"`
-	Avatar   image.Image `json:"idAvatar"`
+	Id       int64  `json:"id"`
+	Nickname string `json:"nickname"`
 	jwt.RegisteredClaims
 }
 

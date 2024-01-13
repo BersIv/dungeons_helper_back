@@ -51,7 +51,7 @@ func (r *repository) GetAccountById(ctx context.Context, id int64) (*LoginAccoun
 	query := `SELECT a.id, email, password, nickname, i.image FROM account a 
 				LEFT JOIN image i ON a.idAvatar = i.id 
 				WHERE a.id = ?`
-	err := r.db.QueryRowContext(ctx, query, id).Scan(&account.Id, &account.Email, &account.Password, &account.Nickname, &account.Avatar)
+	err := r.db.QueryRowContext(ctx, query, id).Scan(&account.Id, &account.Email, &account.Password, &account.Nickname, &account.Avatar.Image)
 	if err != nil {
 		return nil, err
 	}
