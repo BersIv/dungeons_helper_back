@@ -22,9 +22,16 @@ func (h *Handler) GetAllSubraces(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusUnauthorized)
 		return
 	}
-
+	var raceId struct {
+		Id int64 `json:"id"`
+	}
+	err = json.NewDecoder(r.Body).Decode(&raceId)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	ctx := r.Context()
-	res, err := h.Service.GetAllSubraces(ctx)
+	res, err := h.Service.GetAllSubraces(ctx, raceId.Id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

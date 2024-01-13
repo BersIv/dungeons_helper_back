@@ -68,19 +68,19 @@ func StatsRouter(statsHandler *stats.Handler) Option {
 
 func AlignmentRouter(alignmentHandler *alignment.Handler) Option {
 	return func(r *mux.Router) {
-		r.HandleFunc("/getAllAlignments", alignmentHandler.GetAllAlignments).Methods("GET")
+		r.HandleFunc("/getAlignments", alignmentHandler.GetAllAlignments).Methods("GET")
 	}
 }
 
 func ClassRouter(classHandler *class.Handler) Option {
 	return func(r *mux.Router) {
-		r.HandleFunc("/getAllClasses", classHandler.GetAllClasses).Methods("GET")
+		r.HandleFunc("/getClasses", classHandler.GetAllClasses).Methods("GET")
 	}
 }
 
 func SkillsRouter(skillHandler *skills.Handler) Option {
 	return func(r *mux.Router) {
-		r.HandleFunc("/getAllSkills", skillHandler.GetAllSkills).Methods("GET")
+		r.HandleFunc("/getSkills", skillHandler.GetAllSkills).Methods("GET")
 	}
 }
 

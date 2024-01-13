@@ -9,9 +9,9 @@ type Subraces struct {
 }
 
 type Repository interface {
-	GetAllSubraces(ctx context.Context) ([]Subraces, error)
+	GetAllSubraces(ctx context.Context, idRace int64) ([]Subraces, error)
 }
 
 type Service interface {
-	GetAllSubraces(c context.Context) ([]Subraces, error)
+	GetAllSubraces(c context.Context, idRace int64) ([]Subraces, error)
 }

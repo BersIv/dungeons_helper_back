@@ -14,11 +14,11 @@ func NewRepository(db db.DatabaseTX) Repository {
 	return &repository{db: db}
 }
 
-func (r *repository) GetAllSubraces(ctx context.Context) ([]Subraces, error) {
+func (r *repository) GetAllSubraces(ctx context.Context, idRace int64) ([]Subraces, error) {
 	var subraces []Subraces
 
-	query := "SELECT id, subraceName, idStats FROM subrace"
-	rows, err := r.db.QueryContext(ctx, query)
+	query := "SELECT id, subraceName, idStats FROM subrace WHERE idRace = ?"
+	rows, err := r.db.QueryContext(ctx, query, idRace)
 	if err != nil {
 		return nil, err
 	}
