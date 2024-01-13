@@ -45,6 +45,8 @@ func AccountRoutes(accountHandler *account.Handler) Option {
 		r.HandleFunc("/auth/restorePassword", accountHandler.RestorePassword).Methods("POST")
 		r.HandleFunc("/account/change/nickname", accountHandler.UpdateNickname).Methods("PATCH")
 		r.HandleFunc("/account/change/password", accountHandler.UpdatePassword).Methods("PATCH")
+		r.HandleFunc("/auth/google/login", accountHandler.GoogleLogin).Methods("GET")
+		r.HandleFunc("/auth/google/callback", accountHandler.GoogleCallback).Methods("GET")
 	}
 }
 
@@ -110,6 +112,10 @@ func WebsocketRouter(wsHandler *websocket.Handler) Option {
 func InitRouter(options ...Option) *mux.Router {
 	r := mux.NewRouter()
 	//r.Use(LoggingMiddleware)
+
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "C:/Users/BersI/GolandProjects/dungeons_helper/server/templates/index.html")
+	}).Methods("GET")
 
 	for _, option := range options {
 		option(r)

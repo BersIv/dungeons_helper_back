@@ -110,6 +110,31 @@ func (s *service) RestorePassword(c context.Context, email string) error {
 	return nil
 }
 
+func (s *service) GoogleAuth(c context.Context, req *GoogleAcc) (*LoginAccountRes, error) {
+	ctx, cancel := context.WithTimeout(c, s.timeout)
+	defer cancel()
+
+	account, err := s.Repository.GetAccountByEmail(ctx, req.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, util.MyJWTClaims{
+		Id:       account.Id,
+		Nickname: account.Nickname,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Issuer:    strconv.Itoa(int(account.Id)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 7)),
+		},
+	})
+	secretKey := os.Getenv("SECRET_KEY")
+	ss, err := token.SignedString([]byte(secretKey))
+	if err != nil {
+		return nil, err
+	}
+	return &LoginAccountRes{accessToken: ss, Id: account.Id, Email: account.Email, Nickname: account.Nickname, Avatar: account.Avatar}, nil
+}
+
 func (s *service) UpdateNickname(c context.Context, req *UpdateNicknameReq) error {
 	ctx, cancel := context.WithTimeout(c, s.timeout)
 	defer cancel()

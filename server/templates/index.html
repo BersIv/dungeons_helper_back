@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google OAuth Пример</title>
+</head>
+<body>
+    <h1>Добро пожаловать в пример Google OAuth</h1>
+    <button onclick="googleLogin()">Войти через Google</button>
+
+    <script>
+        function googleLogin() {
+            window.location.href = "/auth/google/login";
+        }
+    </script>
+    <button onclick="logout()">Выйти</button>
+
+    <script>
+        function logout() {
+            window.location.href = "/logout";
+        }
+    </script>
+</body>
+</html>

@@ -49,6 +49,11 @@ type UpdatePasswordReq struct {
 	NewPassword string `json:"newPassword"`
 }
 
+type GoogleAcc struct {
+	Email   string `json:"email"`
+	Picture string `json:"picture"`
+}
+
 type Repository interface {
 	CreateAccount(ctx context.Context, account *CreateAccountReq) error
 	GetAccountByEmail(ctx context.Context, email string) (*LoginAccountRes, error)
@@ -63,4 +68,5 @@ type Service interface {
 	RestorePassword(c context.Context, email string) error
 	UpdateNickname(c context.Context, req *UpdateNicknameReq) error
 	UpdatePassword(c context.Context, req *UpdatePasswordReq) error
+	GoogleAuth(c context.Context, req *GoogleAcc) (*LoginAccountRes, error)
 }
