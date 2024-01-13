@@ -88,7 +88,7 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	cookie := http.Cookie{
 		Name:     "jwt",
 		Value:    res.accessToken,
-		Expires:  time.Now().Add(time.Hour),
+		Expires:  time.Now().Add(time.Hour * 24 * 7),
 		Path:     "/",
 		Domain:   "localhost",
 		Secure:   false,

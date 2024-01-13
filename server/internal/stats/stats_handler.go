@@ -1,6 +1,7 @@
 package stats
 
 import (
+	"dungeons_helper/util"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -17,7 +18,13 @@ func NewHandler(s Service) *Handler {
 }
 
 func (h *Handler) GetStatsById(w http.ResponseWriter, r *http.Request) {
-	err := json.NewDecoder(r.Body).Decode(&GetStatsReq)
+	_, err := util.GetIdFromToken(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	err = json.NewDecoder(r.Body).Decode(&GetStatsReq)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

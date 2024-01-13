@@ -1,6 +1,7 @@
 package subraces
 
 import (
+	"dungeons_helper/util"
 	"encoding/json"
 	"net/http"
 )
@@ -16,6 +17,12 @@ func NewHandler(s Service) *Handler {
 }
 
 func (h *Handler) GetAllSubraces(w http.ResponseWriter, r *http.Request) {
+	_, err := util.GetIdFromToken(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
 	ctx := r.Context()
 	res, err := h.Service.GetAllSubraces(ctx)
 	if err != nil {

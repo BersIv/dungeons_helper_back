@@ -1,6 +1,7 @@
 package class
 
 import (
+	"dungeons_helper/util"
 	"encoding/json"
 	"net/http"
 )
@@ -16,6 +17,11 @@ func NewHandler(s Service) *Handler {
 }
 
 func (h *Handler) GetAllClasses(w http.ResponseWriter, r *http.Request) {
+	_, err := util.GetIdFromToken(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
 	ctx := r.Context()
 	res, err := h.Service.GetAllClasses(ctx)
 	if err != nil {

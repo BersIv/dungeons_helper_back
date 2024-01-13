@@ -44,8 +44,14 @@ func (h *Handler) GetAllCharactersByAccId(w http.ResponseWriter, r *http.Request
 }
 
 func (h *Handler) GetCharacterById(w http.ResponseWriter, r *http.Request) {
+	_, err := util.GetIdFromToken(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
 	var id GetCharacterReq
-	err := json.NewDecoder(r.Body).Decode(&id)
+	err = json.NewDecoder(r.Body).Decode(&id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

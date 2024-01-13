@@ -5,15 +5,15 @@ import (
 	"dungeons_helper/internal/alignment"
 	"dungeons_helper/internal/character"
 	"dungeons_helper/internal/class"
-	"dungeons_helper/internal/lobby"
 	"dungeons_helper/internal/races"
 	"dungeons_helper/internal/skills"
 	"dungeons_helper/internal/stats"
 	"dungeons_helper/internal/subraces"
 	"dungeons_helper/internal/websocket"
 	"fmt"
-	"github.com/gorilla/mux"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 func LoggingMiddleware(next http.Handler) http.Handler {
@@ -92,13 +92,13 @@ func CharacterRouter(characterHandler *character.Handler) Option {
 	}
 }
 
-func LobbyRouter(lobbyHandler *lobby.Handler) Option {
-	return func(r *mux.Router) {
-		r.HandleFunc("/createLobby", lobbyHandler.CreateLobby).Methods("POST")
-		r.HandleFunc("/getAllLobby", lobbyHandler.GetAllLobby).Methods("POST")
-		r.HandleFunc("/joinLobby", lobbyHandler.JoinLobby)
-	}
-}
+// func LobbyRouter(lobbyHandler *lobby.Handler) Option {
+// 	return func(r *mux.Router) {
+// 		r.HandleFunc("/createLobby", lobbyHandler.CreateLobby).Methods("POST")
+// 		r.HandleFunc("/getAllLobby", lobbyHandler.GetAllLobby).Methods("POST")
+// 		r.HandleFunc("/joinLobby", lobbyHandler.JoinLobby)
+// 	}
+// }
 
 func WebsocketRouter(wsHandler *websocket.Handler) Option {
 	return func(r *mux.Router) {
