@@ -47,7 +47,7 @@ func (s *service) CreateAccount(c context.Context, req *CreateAccountReq) error 
 
 	//err = sendWelcomeEmail(req.Email)
 	//if err != nil {
-		//return err
+	//return err
 	//}
 
 	return nil
@@ -105,7 +105,7 @@ func (s *service) RestorePassword(c context.Context, email string) error {
 
 	//err = sendNewPassword(account.Email, tempPassword)
 	//if err != nil {
-		//return err
+	//return err
 	//}
 	return nil
 }

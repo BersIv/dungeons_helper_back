@@ -54,6 +54,10 @@ type GoogleAcc struct {
 	Picture string `json:"picture"`
 }
 
+type Token struct {
+	Token string `json:"token"`
+}
+
 type Repository interface {
 	CreateAccount(ctx context.Context, account *CreateAccountReq) error
 	GetAccountByEmail(ctx context.Context, email string) (*LoginAccountRes, error)

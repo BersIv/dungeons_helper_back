@@ -2,15 +2,12 @@ package account
 
 import (
 	"context"
-	"crypto/rand"
 	"database/sql"
 	"dungeons_helper/util"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -18,27 +15,16 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	"golang.org/x/crypto/bcrypt"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
+	"google.golang.org/api/idtoken"
 )
 
 type Handler struct {
 	Service
-	GoogleOAuthConfig *oauth2.Config
 }
 
 func NewHandler(s Service) *Handler {
-	googleOAuthConfig := &oauth2.Config{
-		RedirectURL:  "http://194.247.187.44.nip.io:5000/auth/google/callback",
-		ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
-		ClientSecret: os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
-		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"},
-		Endpoint:     google.Endpoint,
-	}
-
 	return &Handler{
-		Service:           s,
-		GoogleOAuthConfig: googleOAuthConfig,
+		Service: s,
 	}
 }
 
@@ -128,62 +114,63 @@ func (h *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(jsonResponse)
 }
 
-func (h *Handler) GoogleLogin(w http.ResponseWriter, r *http.Request) {
-	oauthState := generateStateOauthCookie(w)
-
-	u := h.GoogleOAuthConfig.AuthCodeURL(oauthState)
-	http.Redirect(w, r, u, http.StatusTemporaryRedirect)
-}
-
-func (h *Handler) GoogleCallback(w http.ResponseWriter, r *http.Request) {
-	oauthState, _ := r.Cookie("oauthstate")
-
-	if r.FormValue("state") != oauthState.Value {
-		log.Println("Invalid OAuth state")
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+func (h *Handler) LoginGoogle(w http.ResponseWriter, r *http.Request) {
+	var googleToken Token
+	err := json.NewDecoder(r.Body).Decode(&googleToken)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}(r.Body)
 
-	data, err := h.getUserDataFromGoogle(r.FormValue("code"))
+	idToken := googleToken.Token
+
+	audience := os.Getenv("GOOGLE_OAUTH_CLIENT_ID")
+	payload, err := idtoken.Validate(context.Background(), idToken, audience)
 	if err != nil {
-		log.Println(err.Error())
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+		http.Error(w, "Invalid ID token", http.StatusUnauthorized)
+		return
+	}
+	email, found := payload.Claims["email"].(string)
+	if !found {
+		http.Error(w, "Email not found in ID token", http.StatusUnauthorized)
+		return
+	}
+	imageURL, found := payload.Claims["picture"].(string)
+	if !found {
+		http.Error(w, "Picture URL not found in ID token", http.StatusUnauthorized)
 		return
 	}
 
 	var googleData GoogleAcc
-	if err := json.Unmarshal(data, &googleData); err != nil {
-		log.Println("Failed to unmarshal JSON:", err)
-		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-		return
-	}
-
-	// userEmail := googleData.Email
-	// fmt.Println("User email:", userEmail)
-	// fmt.Println(data)
+	googleData.Email = email
 
 	ctx := r.Context()
-
 	res, err := h.Service.GoogleAuth(ctx, &googleData)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			var account CreateAccountReq
 			account.Email = googleData.Email
-
-			imageURL := googleData.Picture
 			response, err := http.Get(imageURL)
 			if err != nil {
-				log.Fatal(err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
 			}
 			defer response.Body.Close()
 
 			imageData, err := io.ReadAll(response.Body)
 			if err != nil {
-				log.Fatal(err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
 			}
 
 			base64Image := base64.StdEncoding.EncodeToString(imageData)
-			defer response.Body.Close()
 
 			account.Avatar = base64Image
 			account.Nickname = strings.Split(account.Email, "@")[0]
@@ -196,6 +183,7 @@ func (h *Handler) GoogleCallback(w http.ResponseWriter, r *http.Request) {
 			res, err := h.Service.GoogleAuth(ctx, &googleData)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
 			}
 
 			cookie := http.Cookie{
@@ -374,35 +362,4 @@ func (h *Handler) UpdatePassword(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-}
-
-func generateStateOauthCookie(w http.ResponseWriter) string {
-	var expiration = time.Now().Add(20 * time.Minute)
-
-	b := make([]byte, 16)
-	rand.Read(b)
-	state := base64.URLEncoding.EncodeToString(b)
-	cookie := http.Cookie{Name: "oauthstate", Value: state, Expires: expiration}
-	http.SetCookie(w, &cookie)
-
-	return state
-}
-
-func (h *Handler) getUserDataFromGoogle(code string) ([]byte, error) {
-	// Use code to get token and get user info from Google.
-
-	token, err := h.GoogleOAuthConfig.Exchange(context.Background(), code)
-	if err != nil {
-		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
-	}
-	response, err := http.Get(oauthGoogleUrlAPI + token.AccessToken)
-	if err != nil {
-		return nil, fmt.Errorf("failed getting user info: %s", err.Error())
-	}
-	defer response.Body.Close()
-	contents, err := io.ReadAll(response.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed read response: %s", err.Error())
-	}
-	return contents, nil
 }
