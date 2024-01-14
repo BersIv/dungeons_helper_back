@@ -14,8 +14,23 @@ func NewRepository(db db.DatabaseTX) Repository {
 }
 
 func (r *repository) CreateAccount(ctx context.Context, req *CreateAccountReq) error {
+	tx, err := r.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		if err != nil {
+			err := tx.Rollback()
+			if err != nil {
+				return
+			}
+			return
+		}
+		err = tx.Commit()
+	}()
+
 	query := "INSERT INTO image(image) VALUES (?)"
-	result, err := r.db.ExecContext(ctx, query, req.Avatar)
+	result, err := tx.ExecContext(ctx, query, req.Avatar)
 	if err != nil {
 		return err
 	}
@@ -25,11 +40,14 @@ func (r *repository) CreateAccount(ctx context.Context, req *CreateAccountReq) e
 	}
 
 	query = "INSERT INTO account(email, password, nickname, idAvatar) VALUES (?, ?, ?, ?)"
-	_, err = r.db.ExecContext(ctx, query, req.Email, req.Password, req.Nickname, idImage)
+	_, err = tx.ExecContext(ctx, query, req.Email, req.Password, req.Nickname, idImage)
 	if err != nil {
 		return err
 	}
 
+	if err = tx.Commit(); err != nil {
+		return err
+	}
 	return nil
 }
 
