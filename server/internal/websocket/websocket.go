@@ -6,11 +6,12 @@ import (
 	"dungeons_helper/util"
 	"errors"
 	"fmt"
-	"github.com/go-sql-driver/mysql"
-	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/go-sql-driver/mysql"
+	"github.com/gorilla/websocket"
 )
 
 type Handler struct {
@@ -104,7 +105,7 @@ func (h *Handler) JoinLobby(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) Reg(w http.ResponseWriter, r *http.Request, accountId int64, idLobby int64, nickname string) {
-	conn, err := upgrader.Upgrade(w, r, nil)
+	conn, err := upgrader.Upgrade(&util.HijackableResponseWriter{ResponseWriter: w}, r, nil)
 	if err != nil {
 		log.Println("Error upgrading to WebSocket:", err)
 		return

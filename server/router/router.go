@@ -10,30 +10,11 @@ import (
 	"dungeons_helper/internal/stats"
 	"dungeons_helper/internal/subraces"
 	"dungeons_helper/internal/websocket"
-	"fmt"
+	"dungeons_helper/util"
 	"net/http"
 
 	"github.com/gorilla/mux"
 )
-
-func LoggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		rr := &responseWriterWithStatus{ResponseWriter: w, statusCode: http.StatusOK}
-		next.ServeHTTP(rr, r)
-		status := rr.statusCode
-		fmt.Printf("Received request: %s %s - Status: %d\n", r.Method, r.RequestURI, status)
-	})
-}
-
-type responseWriterWithStatus struct {
-	http.ResponseWriter
-	statusCode int
-}
-
-func (r *responseWriterWithStatus) WriteHeader(statusCode int) {
-	r.statusCode = statusCode
-	//r.ResponseWriter.WriteHeader(statusCode)
-}
 
 type Option func(router *mux.Router)
 
@@ -110,7 +91,7 @@ func WebsocketRouter(wsHandler *websocket.Handler) Option {
 
 func InitRouter(options ...Option) *mux.Router {
 	r := mux.NewRouter()
-	//r.Use(LoggingMiddleware)
+	r.Use(util.LoggingMiddleware)
 
 	for _, option := range options {
 		option(r)

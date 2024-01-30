@@ -23,3 +23,18 @@ drop table dnd.class;
 drop table dnd.alignment;
 
 drop table dnd.lobby;
+
+SELECT a.id, email, password, nickname, image FROM account a 
+LEFT JOIN image i ON a.idAvatar = i.id
+WHERE email = 1;
+
+SELECT a.id, email, password, nickname, i.image FROM account a 
+LEFT JOIN image i ON a.idAvatar = i.id 
+WHERE email = 1;
+
+SELECT a.id, email, password, nickname, i.image FROM account a 
+				LEFT JOIN image i ON a.idAvatar = i.id 
+				WHERE email = 1;
+
+use dnd;
+SELECT id, subraceName, idStats FROM subrace WHERE idRace = 1;

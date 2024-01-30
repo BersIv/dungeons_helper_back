@@ -4,7 +4,7 @@ create table `image`
 (
     id    int auto_increment
         primary key,
-    image blob not null
+    image longblob not null
 );
 
 create table `account`
@@ -258,3 +258,9 @@ INSERT INTO accChar (act, idAccount, idChar)
     VALUE (true, 1, 1);
 INSERT INTO accChar (act, idAccount, idChar)
     VALUE (true, 2, 2);
+
+
+use dnd;
+DELETE FROM account WHERE email = "ivanosus@mail.ru";
+
+SELECT * FROM account;
